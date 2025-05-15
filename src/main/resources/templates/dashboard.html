@@ -12,6 +12,14 @@
     <div th:each="post : ${posts}" class="mb-3">
         <h4 th:text="${post.title}"></h4>
         <p th:text="${post.content}"></p>
+        <div class="d-flex gap-2">
+            <form th:action="@{/post/edit/{id}(id=${post.id})}" method="get">
+                <button th:action="@{/post/edit/{id}(id=${post.id})}" method="get">Edit</button>
+            </form>
+            <form th:action="@{/post/delete/{id}(id=${post.id})}" method="post">
+                <button class="btn btn-sm btn-danger">Delete</button>
+            </form>
+        </div>
         <hr/>
     </div>
 </div>

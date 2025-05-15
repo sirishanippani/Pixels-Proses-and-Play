@@ -41,4 +41,34 @@ public class DashboardController {
         postRepository.save(post);
         return "redirect:/dashboard";
     }
+
+    @GetMapping("/post/edit/{id}")
+    public String editPostForm(@PathVariable Long id, Model model, Authentication auth) {
+        Post post = postRepository.findById(id).orElseThrow();
+        if (!post.getUser().getEmail().equals(auth.getName())) {
+            return "redirect:/dashboard";
+        }
+        model.addAttribute("post", post);
+        return "edit_post";
+    }
+
+    @PostMapping("/post/edit/{id}")
+    public String updatePost(@PathVariable Long id, @ModelAttribute Post updatedPost, Authentication auth) {
+        Post post = postRepository.findById(id).orElseThrow();
+        if (post.getUser().getEmail().equals(auth.getName())) {
+            post.setTitle(updatedPost.getTitle());
+            post.setContent(updatedPost.getContent());
+            postRepository.save(post);
+        }
+        return "redirect:/dashboard";
+    }
+
+    @PostMapping("/post/delete/{id}")
+    public String deletePost(@PathVariable Long id, Authentication auth){
+        Post post = postRepository.findById(id).orElseThrow();
+        if (post.getUser().getEmail().equals(auth.getName())){
+            postRepository.delete(post);
+        }
+        return "redirect:/dashboard";
+    }
 }
