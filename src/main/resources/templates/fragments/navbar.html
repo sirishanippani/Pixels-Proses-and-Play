@@ -22,7 +22,29 @@
                     </li>
                 </ul>
             </div>
+            <form class="d-flex ms-3" role="search">
+                <input class="form-control" type="search" id="search-input" placeholder="Search posts..." aria-label="Search">
+                <ul id="search-suggestions" class="list-group position-absolute mt-2 w-100" style="z-index: 1000;"></ul>
+            </form>
         </div>
     </nav>
+    <script>
+        const input = document.getElementById('search-input');
+        const suggestions = document.getElementById('search-suggestions');
+
+        input.addEventListener('input', async () => {
+          const query = input.value.trim();
+          if (!query) return suggestions.innerHTML = '';
+
+          const res = await fetch(`/search?q=${encodeURIComponent(query)}`);
+          const data = await res.json();
+
+          if (data.length === 0) {
+            suggestions.innerHTML = `<li class='list-group-item text-muted'>No results</li>`;
+          } else {
+            suggestions.innerHTML = data.map(title => `<li class='list-group-item'>${title}</li>`).join('');
+          }
+        });
+    </script>
 </div>
 
