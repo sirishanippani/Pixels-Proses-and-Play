@@ -42,7 +42,9 @@
           if (data.length === 0) {
             suggestions.innerHTML = `<li class='list-group-item text-muted'>No results</li>`;
           } else {
-            suggestions.innerHTML = data.map(title => `<li class='list-group-item'>${title}</li>`).join('');
+            suggestions.innerHTML = data.map(post =>
+            `<li class='list-group-item'><a href='/post/${post.id}' class='text-decoration-none'>${post.title}</a></li>`
+            ).join('');
           }
         });
     </script>
