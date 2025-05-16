@@ -1,6 +1,7 @@
 package com.project.blog.security;
 
 import com.project.blog.model.User;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -9,6 +10,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+@Getter
 public class AppUserDetails implements UserDetails{
 
     private final User user;
@@ -51,4 +53,5 @@ public class AppUserDetails implements UserDetails{
     public boolean isEnabled() {
         return true;
     }
+
 }

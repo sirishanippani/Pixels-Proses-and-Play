@@ -8,28 +8,43 @@
 <body>
 <div th:replace="fragments/navbar :: navbar"></div>
 <div class="container mt-5">
-    <h2>Admin Dashboard</h2>
+    <h2>Welcome, <span th:text="${admin}"></span>!</h2>
+
+    <div th:if="${flashMessage}" class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+        <span th:text="${flashMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
 
     <h4 class="mt-4">All Users</h4>
     <table class="table table-bordered">
-        <thead><tr><th>ID</th><th>Email</th><th>Username</th></tr></thead>
+        <thead><tr><th>ID</th><th>Email</th><th>Username</th><th>Action</th></tr></thead>
         <tbody>
         <tr th:each="user : ${users}">
             <td th:text="${user.id}"></td>
             <td th:text="${user.email}"></td>
             <td th:text="${user.username}"></td>
+            <td>
+                <form th:action="@{'/admin/user/delete/' + ${user.id}}" method="post">
+                    <button class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</button>
+                </form>
+            </td>
         </tr>
         </tbody>
     </table>
 
     <h4 class="mt-5">All Posts</h4>
     <table class="table table-bordered">
-        <thead><tr><th>ID</th><th>Title</th><th>Author</th></tr></thead>
+        <thead><tr><th>ID</th><th>Title</th><th>Author</th><th>Action</th></tr></thead>
         <tbody>
         <tr th:each="post : ${posts}">
             <td th:text="${post.id}"></td>
             <td th:text="${post.title}"></td>
             <td th:text="${post.user.username}"></td>
+            <td>
+                <form th:action="@{'/admin/post/delete/' + ${post.id}}" method="post">
+                    <button class="btn btn-sm btn-danger" onclick="return confirm('Delete this post?')">Delete</button>
+                </form>
+            </td>
         </tr>
         </tbody>
     </table>
