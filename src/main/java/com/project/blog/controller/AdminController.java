@@ -1,6 +1,7 @@
 package com.project.blog.controller;
 
 import com.project.blog.model.Post;
+import com.project.blog.model.Role;
 import com.project.blog.model.User;
 import com.project.blog.repository.PostRepository;
 import com.project.blog.repository.UserRepository;
@@ -53,6 +54,27 @@ public class AdminController {
     public String deletePost(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         postRepository.deleteById(id);
         redirectAttributes.addFlashAttribute("flashMessage", "Post deleted successfully!");
+        return "redirect:/admin";
+    }
+
+    @PostMapping("/admin/user/toggle-role/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String toggleUserRole(@PathVariable Long id, RedirectAttributes redirectAttributes, Authentication auth) {
+        userRepository.findById(id).ifPresent(user -> {
+            boolean isSelf = user.getEmail().equals(auth.getName());
+            if (user.getRole().equals("ROLE_USER")) {
+                user.setRole(Role.ROLE_ADMIN);
+            } else {
+                user.setRole(Role.ROLE_USER);
+            }
+            userRepository.save(user);
+            if (isSelf) {
+                redirectAttributes.addFlashAttribute("flashMessage", "Your role has changed. Please log in again.");
+                // redirect to logout so user session is refreshed
+                redirectAttributes.addFlashAttribute("forceLogout", true);
+            }
+        });
+        redirectAttributes.addFlashAttribute("flashMessage", "User role toggled successfully!");
         return "redirect:/admin";
     }
 
