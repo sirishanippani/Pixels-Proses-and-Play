@@ -1,0 +1,40 @@
+html.dark body {
+  background-color: #121212 !important;
+  color: #eee !important;
+}
+
+html.dark .navbar {
+  background-color: #1f1f1f !important;
+}
+
+html.dark .navbar .nav-link,
+html.dark .navbar .navbar-brand {
+  color: #eee !important;
+}
+
+html.dark .list-group-item {
+  background-color: #2a2a2a !important;
+  color: #eee !important;
+}
+
+html.dark .btn {
+  border-color: #666 !important;
+  color: #eee !important;
+  background-color: #2a2a2a !important;
+}
+
+html.dark .btn:hover {
+  background-color: #f5f5dc !important; /* cream */
+  color: #111 !important;
+}
+
+html.dark input,
+html.dark textarea {
+  background-color: #1f1f1f !important;
+  color: #eee !important;
+  border-color: #444 !important;
+}
+
+body, .navbar, input, textarea {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}

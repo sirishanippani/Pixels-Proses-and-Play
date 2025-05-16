@@ -26,6 +26,7 @@
                 <input class="form-control" type="search" id="search-input" placeholder="Search posts..." aria-label="Search">
                 <ul id="search-suggestions" class="list-group position-absolute mt-2 w-100" style="z-index: 1000;"></ul>
             </form>
+            <button id="darkModeToggle" class="btn btn-sm btn-outline-secondary ms-3">🌙</button>
         </div>
     </nav>
     <script>
@@ -47,6 +48,20 @@
             ).join('');
           }
         });
+
+        // 🌙 Dark Mode Toggle Logic
+        const toggleBtn = document.getElementById('darkModeToggle');
+        const html = document.documentElement;
+        const savedMode = localStorage.getItem('darkMode');
+
+        if (savedMode === 'true') html.classList.add('dark');
+
+        if (toggleBtn) {
+          toggleBtn.addEventListener('click', () => {
+            html.classList.toggle('dark');
+            localStorage.setItem('darkMode', html.classList.contains('dark'));
+          });
+        }
     </script>
 </div>
 
