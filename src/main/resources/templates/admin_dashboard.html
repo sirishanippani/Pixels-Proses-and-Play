@@ -1,0 +1,38 @@
+<!-- templates/admin_dashboard.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><title>Admin Panel</title>
+    <link rel="stylesheet" th:href="@{/css/theme.css}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div th:replace="fragments/navbar :: navbar"></div>
+<div class="container mt-5">
+    <h2>Admin Dashboard</h2>
+
+    <h4 class="mt-4">All Users</h4>
+    <table class="table table-bordered">
+        <thead><tr><th>ID</th><th>Email</th><th>Username</th></tr></thead>
+        <tbody>
+        <tr th:each="user : ${users}">
+            <td th:text="${user.id}"></td>
+            <td th:text="${user.email}"></td>
+            <td th:text="${user.username}"></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <h4 class="mt-5">All Posts</h4>
+    <table class="table table-bordered">
+        <thead><tr><th>ID</th><th>Title</th><th>Author</th></tr></thead>
+        <tbody>
+        <tr th:each="post : ${posts}">
+            <td th:text="${post.id}"></td>
+            <td th:text="${post.title}"></td>
+            <td th:text="${post.user.username}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
