@@ -12,7 +12,7 @@
     <h2>Your Posts</h2>
     <a href="/post/create" class="btn btn-primary mb-3">Create New Post</a>
     <div th:each="post : ${posts}" class="mb-3">
-        <h4 th:text="${post.title}"></h4>
+        <h4><a th:href="@{/post/{id}(id=${post.id})}" th:text="${post.title}" class="text-decoration-none"></a></h4>
         <p th:text="${post.content}"></p>
         <div class="d-flex gap-2">
             <form th:action="@{/post/edit/{id}(id=${post.id})}" method="get">
