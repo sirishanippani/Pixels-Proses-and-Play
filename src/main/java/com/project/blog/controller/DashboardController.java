@@ -9,6 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 public class DashboardController {
@@ -34,11 +35,12 @@ public class DashboardController {
     }
 
     @PostMapping("/post/create")
-    public String savePost(@ModelAttribute("post") Post post, Authentication auth) {
+    public String savePost(@ModelAttribute("post") Post post, Authentication auth, RedirectAttributes redirectAttributes) {
         String email = auth.getName();
         User user = userRepository.findByEmail(email);
         post.setUser(user);
         postRepository.save(post);
+        redirectAttributes.addFlashAttribute("flashMessage", "Post created successfully!");
         return "redirect:/dashboard";
     }
 
