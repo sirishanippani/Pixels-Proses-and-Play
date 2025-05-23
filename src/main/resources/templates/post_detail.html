@@ -1,12 +1,14 @@
 <!-- post_detail.html -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head><title th:text="${post.title}">Post</title>
+<head>
+    <title th:text="${post.title}">Post</title>
     <link rel="stylesheet" th:href="@{/css/theme.css}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
 <div th:replace="fragments/navbar :: navbar"></div>
+
 <div class="container mt-5">
     <h1 th:text="${post.title}"></h1>
     <p class="text-muted">
@@ -15,9 +17,12 @@
     </p>
     <p class="mt-3" th:text="${post.content}"></p>
 
-    <div th:if="${#authentication.name == post.user.email}" class="mt-4">
+    <!-- Show Edit/Delete if current user is author or admin -->
+    <div th:if="${currentUser != null and (currentUser.id == post.user.id or currentUser.role.name() == 'ADMIN')}" class="mt-4">
         <a th:href="@{/post/edit/{id}(id=${post.id})}" class="btn btn-warning">Edit Post</a>
+        <a th:href="@{/post/delete/{id}(id=${post.id})}" class="btn btn-danger ms-2" onclick="return confirm('Are you sure?')">Delete Post</a>
     </div>
 </div>
+
 </body>
 </html>

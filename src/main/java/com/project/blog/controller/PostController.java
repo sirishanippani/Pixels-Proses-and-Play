@@ -45,6 +45,20 @@ public class PostController {
         return "edit_post";
     }
 
+    @GetMapping("/{id}")
+    public String viewPost(@PathVariable Long id, Model model,
+                           @AuthenticationPrincipal AppUserDetails userDetails) {
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid post ID: " + id));
+        model.addAttribute("post", post);
+
+        if (userDetails != null) {
+            model.addAttribute("currentUser", userDetails.getUser());
+        }
+
+        return "post_detail";
+    }
+
     @PostMapping("/edit/{id}")
     public String updatePost(@PathVariable Long id,
                              @ModelAttribute Post updatedPost,
