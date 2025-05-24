@@ -79,7 +79,7 @@
     </div>
     <div class="post-content" th:text="${post.content}"></div>
 
-    <div class="post-actions" th:if="${currentUser != null and (currentUser.id == post.user.id or currentUser.role.name() == 'ADMIN')}">
+    <div class="post-actions" th:if="${currentUser != null and (currentUser.id == post.user.id or currentUser.role?.equals('ADMIN'))}">
         <a th:href="@{/post/edit/{id}(id=${post.id})}" class="btn btn-outline-primary">✏️ Edit</a>
         <a th:href="@{/post/delete/{id}(id=${post.id})}" class="btn btn-outline-danger" onclick="return confirm('Are you sure?')">🗑️ Delete</a>
     </div>

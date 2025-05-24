@@ -142,11 +142,12 @@ body {
   background: linear-gradient(90deg, #ff6ec4, #7873f5);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: hue-rotate 6s linear infinite;
+  animation: glowTagline 6s ease-in-out infinite;
 }
 
-@keyframes hue-rotate {
-  0% { filter: hue-rotate(0deg);
+@keyframes glowTagline {
+  0% { filter: hue-rotate(0deg); }
+  100% { filter: hue-rotate(360deg); }
 }
 
 }
