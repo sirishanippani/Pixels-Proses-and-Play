@@ -17,6 +17,9 @@ public class HomeController {
 
     @GetMapping("/")
     public String home(Model model) {
+        List<Post> randomFeatured = postRepository.findRandomPosts();
+        model.addAttribute("featuredPosts", randomFeatured);
+
         List<Post> recentPosts = postRepository.findTop10ByOrderByCreatedAtDesc();
         model.addAttribute("recentPosts", recentPosts);
         return "index";

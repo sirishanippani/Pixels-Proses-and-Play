@@ -38,6 +38,7 @@ html.dark textarea {
 body, .navbar, input, textarea {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
+
 html.dark .dropdown-menu {
   background-color: #2b2b2b !important;
   color: #f8f9fa !important;
@@ -89,14 +90,23 @@ html.dark .dropdown-item.disabled {
 }
 
 @keyframes blink-caret {
-  0%, 100% { border-color: transparent; }
-  50% { border-color: orange; }
+  0%, 100% { border-color: transparent;
+}
+
+50% {
+  border-color: orange;
+}
+
 }
 
 @keyframes glowText {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  0% { background-position: 0% 50%;
+}
+
+100% {
+  background-position: 0% 50%;
+}
+
 }
 #brandTextStatic,
 #brandTextPlay {
@@ -106,9 +116,168 @@ html.dark .dropdown-item.disabled {
   color: transparent;
   display: inline-block;
 }
+
 #brandTextND span {
   color: #f39c12 !important;
   -webkit-text-fill-color: #f39c12 !important;
   background: none !important;
+}
+
+body {
+  font-family: 'Segue UI', sans-serif;
+  min-height: 100vh;
+  margin: 0;
+}
+
+.hero-section {
+  text-align: center;
+  padding: 2rem 1rem 3rem 1rem;
+}
+
+.hero-tagline {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  min-height: 80px;
+  background: linear-gradient(90deg, #ff6ec4, #7873f5);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: hue-rotate 6s linear infinite;
+}
+
+@keyframes hue-rotate {
+  0% { filter: hue-rotate(0deg);
+}
+
+}
+
+.hero-subtext {
+  font-size: 1.1rem;
+  color: #6c757d;
+  margin-bottom: 2rem;
+}
+
+.create-btn {
+  font-size: 1.1rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+}
+
+.recent-posts-wrapper {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  padding: 0 1rem;
+}
+
+.card-body {
+  padding: 1rem 1.25rem;
+}
+
+.card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.card-text {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.card-meta {
+  font-size: 0.75rem;
+  color: #888;
+  margin-top: 0.75rem;
+}
+
+html.dark .recent-card {
+  background-color: #1f1f1f;
+  color: #eee;
+}
+
+html.dark .card-text {
+  color: #ccc;
+}
+
+html.dark .card-meta {
+  color: #aaa;
+}
+
+.no-post-box {
+  background-color: rgba(200, 200, 200, 0.2);
+}
+
+html.dark .no-post-box {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: #bbb;
+}
+
+.featured-section {
+  margin-top: 1rem;
+margin-bottom: 2rem;
+}
+
+.animate-flame {
+  font-weight: 600;
+font-size: 1.4rem;
+animation: pulseFlame 1.4s infinite;
+}
+
+@keyframes pulseFlame {
+  0%, 100% { transform: scale(1); text-shadow: 0 0 5px #ff6347, 0 0 15px #ffa500;
+}
+
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.15);
+backdrop-filter: blur(10px);
+-webkit-backdrop-filter: blur(10px);
+border: 1px solid rgba(255, 255, 255, 0.2);
+transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.featured-text {
+  color: #333;
+}
+
+.featured-meta {
+  color: #666;
+}
+
+html.dark .featured-text,
+html.dark .featured-meta {
+  color: #ddd;
+}
+
+.glass-style {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 1rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.glass-style:hover {
+  transform: scale(1.03);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+html.dark .glass-style {
+  background: rgba(30, 30, 30, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #eee;
+}
+
+html.dark .glass-style .card-text,
+html.dark .glass-style .card-footer,
+html.dark .glass-style .featured-text,
+html.dark .glass-style .featured-meta {
+  color: #ddd;
+}
+
+html.dark .text-muted {
+  color: #ccc !important;
 }
 
