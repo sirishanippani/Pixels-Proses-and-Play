@@ -8,7 +8,7 @@ html.dark .navbar {
 }
 
 html.dark .navbar .nav-link,
-html.dark .navbar .navbar-brand {
+html.dark .navbar {
   color: #eee !important;
 }
 
@@ -61,3 +61,54 @@ html.dark .dropdown-divider {
 html.dark .dropdown-item.disabled {
   color: #aaaaaa !important;
 }
+
+.navbar-brand {
+  font-family: 'Fira Code', monospace;
+  font-weight: bold;
+  overflow: hidden;
+  white-space: nowrap;
+  position: relative;
+}
+
+.navbar-brand:hover {
+  transform: scale(1.05) rotate(-1deg);
+  color: #f39c12;
+}
+
+#brandText {
+  font-size: 1.2rem;
+  padding-left: 10px;
+  border-right: 2px solid orange;
+  animation: blink-caret 0.75s step-end infinite, glowText 4s ease-in-out infinite;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+  transition: background 0.3s ease-in-out;
+}
+
+@keyframes blink-caret {
+  0%, 100% { border-color: transparent; }
+  50% { border-color: orange; }
+}
+
+@keyframes glowText {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+#brandTextStatic,
+#brandTextPlay {
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  display: inline-block;
+}
+#brandTextND span {
+  color: #f39c12 !important;
+  -webkit-text-fill-color: #f39c12 !important;
+  background: none !important;
+}
+
