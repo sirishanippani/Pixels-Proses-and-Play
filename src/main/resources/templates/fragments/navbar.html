@@ -42,7 +42,7 @@
                                         Logged in as: <span th:text="${#authentication.principal.username}">Username</span>
                                     </span>
                                 </li>
-                                <li><a class="dropdown-item" href="/profile">Profile</a></li>
+                                <li><a class="dropdown-item" th:href="@{'/profile/' + ${#authentication.principal.username}}">Profile</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
                                     <form th:action="@{/logout}" method="post" class="px-3 py-1">

@@ -18,6 +18,10 @@ public class User {
     private String email;
     private String password;
 
+    private String bio;
+
+    private String profileImagePath;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role = Role.ROLE_USER;

@@ -282,3 +282,54 @@ html.dark .text-muted {
   color: #ccc !important;
 }
 
+.glassy-profile {
+    --bs-card-bg: transparent; !important
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    transition: background-color 0.3s ease;
+}
+
+.pastel-text {
+    color: #6c63ff; /* pick your fav pastel here */
+}
+
+.dark-bg {
+    background-color: #121212 !important;
+}
+
+.dark-text {
+    color: #e0e0e0 !important;
+}
+
+.pastel-border {
+    border-color: #b2a4ff !important;
+}
+
+.pastel-text {
+    color: #b47aea; /* Adjust pastel as you like */
+}
+
+.pastel-input {
+    border: 2px solid #e0d3ff;
+    background-color: #f9f5ff;
+    transition: border-color 0.3s ease;
+}
+
+.pastel-input:focus {
+    border-color: #b47aea;
+    box-shadow: 0 0 0 0.2rem rgba(180, 122, 234, 0.25);
+}
+
+.pastel-border {
+    border: 2px dashed #d4bfff;
+}
+
+.pastel-text-dark {
+    color: #d4bfff;
+}
+
+.pastel-border-dark {
+    border-color: #d4bfff !important;
+}
+
+
