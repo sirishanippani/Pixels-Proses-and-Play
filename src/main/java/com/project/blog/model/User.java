@@ -20,7 +20,8 @@ public class User {
 
     private String bio;
 
-    private String profileImagePath;
+    @Column(nullable = false)
+    private String profileImage;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

@@ -89,7 +89,7 @@
         <h2 class="text-xl font-bold mb-4 mt-8">💬 Gossip Corner</h2>
 
         <!-- 🌸 Display Comments -->
-        <div th:each="comment : ${comments}" class="mb-4 p-3 border rounded-xl bg-white dark:bg-gray-800 shadow-sm">
+        <div th:each="comment : ${comments}" class="mb-4 p-3 border rounded-xl dark:bg-gray-800 shadow-sm">
             <p class="text-sm text-gray-700 dark:text-gray-200">
                 <span class="font-semibold text-pink-600 dark:text-pink-400" th:text="${comment.user.username}">A mysterious stranger</span>
                 just said:

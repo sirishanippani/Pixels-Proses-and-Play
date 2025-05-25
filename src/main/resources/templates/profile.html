@@ -16,12 +16,27 @@
 <div class="container mt-5">
   <div class="p-4 rounded-4 border-0 glassy-profile pastel-border">
     <div class="row align-items-center">
+
       <!-- 🖼 Profile Pic -->
-      <div class="col-md-3 text-center">
-        <div style="width: 150px; height: 150px; overflow: hidden;" class="rounded-circle border border-2 mx-auto">
-          <img th:src="${user.profileImagePath != null ? user.profileImagePath : '/images/default-avatar.png'}"
-               alt="Profile Picture"
-               style="width: 100%; height: 100%; object-fit: cover;" />
+      <div class="col-md-3 text-center profile-pic-wrapper">
+        <div class="position-relative d-inline-block">
+
+          <div style="width: 150px; height: 150px; overflow: hidden;" class="rounded-circle border border-2 mx-auto">
+            <img th:src="${user.profileImage != null ? '/images/profile/' + user.profileImage : '/images/default-avatar.png'}"
+                 alt="Profile Picture"
+                 style="width: 100%; height: 100%; object-fit: cover;" />
+          </div>
+
+          <!-- 🖊 Edit Icon Trigger -->
+          <form th:action="@{/profile/upload}" method="post" enctype="multipart/form-data">
+            <label class="position-absolute bottom-0 end-0 bg-white p-1 rounded-circle shadow-sm"
+                   style="cursor: pointer; transform: translate(25%, 25%);"
+                   title="Change profile picture">
+              ✏️
+              <input type="file" name="image" accept="image/*" hidden onchange="this.form.submit()" />
+            </label>
+          </form>
+
         </div>
       </div>
 
@@ -74,6 +89,15 @@
           bioInput.value = randomBio;
       }
   });
+
+  function showFilename(input) {
+    const label = document.getElementById("selectedFileName");
+    if (input.files.length > 0) {
+      label.textContent = input.files[0].name;
+    } else {
+      label.textContent = "";
+    }
+  }
 </script>
 
 
