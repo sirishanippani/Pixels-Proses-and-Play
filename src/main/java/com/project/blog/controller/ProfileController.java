@@ -55,7 +55,7 @@ public class ProfileController {
         user.setBio(formUser.getBio());
 
         userRepository.save(user);
-        redirectAttributes.addFlashAttribute("success", "Profile updated!");
+        redirectAttributes.addFlashAttribute("success", "\uD83D\uDC85 Your glow-up is now official!");
 
         return "redirect:/profile/" + user.getUsername();
     }

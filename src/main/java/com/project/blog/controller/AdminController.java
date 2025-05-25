@@ -45,7 +45,7 @@ public class AdminController {
     @PostMapping("/admin/user/delete/{id}")
     public String deleteUser(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         userRepository.deleteById(id);
-        redirectAttributes.addFlashAttribute("flashMessage", "User deleted successfully!");
+        redirectAttributes.addFlashAttribute("flashMessage", "\uD83D\uDC80 One less drama queen in the cast.");
         return "redirect:/admin";
     }
 
@@ -53,7 +53,7 @@ public class AdminController {
     @PostMapping("/admin/post/delete/{id}")
     public String deletePost(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         postRepository.deleteById(id);
-        redirectAttributes.addFlashAttribute("flashMessage", "Post deleted successfully!");
+        redirectAttributes.addFlashAttribute("flashMessage", "\uD83D\uDD25 You just Thanos-snapped that post.");
         return "redirect:/admin";
     }
 
@@ -69,12 +69,12 @@ public class AdminController {
             }
             userRepository.save(user);
             if (isSelf) {
-                redirectAttributes.addFlashAttribute("flashMessage", "Your role has changed. Please log in again.");
+                redirectAttributes.addFlashAttribute("flashMessage", "👑 New role unlocked! Time to re-enter like royalty.");
                 // redirect to logout so user session is refreshed
                 redirectAttributes.addFlashAttribute("forceLogout", true);
             }
         });
-        redirectAttributes.addFlashAttribute("flashMessage", "User role toggled successfully!");
+        redirectAttributes.addFlashAttribute("flashMessage", "\uD83D\uDD01 Someone just got a promotion... or demotion. Tea! ☕");
         return "redirect:/admin";
     }
 

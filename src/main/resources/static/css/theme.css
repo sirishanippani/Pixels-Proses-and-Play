@@ -353,3 +353,37 @@ body {
     z-index: 1;
 }
 
+/* Toast style upgrades */
+.pastel-toast {
+    background: linear-gradient(to right, #f8d9e8, #d7f5f5);
+    color: #4a4a4a;
+    font-weight: 500;
+    border-left: 8px solid #ff8bcf;
+}
+
+.pastel-toast .btn-close-white {
+    filter: invert(1);
+}
+
+.btn-pink {
+    background-color: #ff69b4;
+    border: none;
+}
+
+.btn-pink:hover {
+    background-color: #ff85c1;
+}
+
+.border-pink-300 {
+    border-color: #f9a8d4 !important;
+}
+
+html.dark .bg-light {
+    background-color: #1e1e1e !important;
+}
+
+html.dark .text-dark {
+    color: #f0f0f0 !important;
+}
+
+

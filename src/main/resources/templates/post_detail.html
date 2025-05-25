@@ -84,7 +84,53 @@
         <a th:href="@{/post/edit/{id}(id=${post.id})}" class="btn btn-outline-primary">✏️ Edit</a>
         <a th:href="@{/post/delete/{id}(id=${post.id})}" class="btn btn-outline-danger" onclick="return confirm('Are you sure?')">🗑️ Delete</a>
     </div>
+
+    <section class="mt-5 pt-4 border-top border-pink-200">
+        <h2 class="text-xl font-bold mb-4 mt-8">💬 Gossip Corner</h2>
+
+        <!-- 🌸 Display Comments -->
+        <div th:each="comment : ${comments}" class="mb-4 p-3 border rounded-xl bg-white dark:bg-gray-800 shadow-sm">
+            <p class="text-sm text-gray-700 dark:text-gray-200">
+                <span class="font-semibold text-pink-600 dark:text-pink-400" th:text="${comment.user.username}">A mysterious stranger</span>
+                just said:
+                <q class="italic" th:text="${comment.content}">some tea ☕</q>
+            </p>
+            <p class="text-xs text-gray-500 mt-1 italic" th:text="${#temporals.format(comment.createdAt, 'dd MMM yyyy HH:mm')}">
+                when the stars aligned
+            </p>
+
+            <!-- 🗑️ Delete Button for Owner -->
+            <form th:if="${loggedInUser != null and comment.user.id == loggedInUser.id}"
+                  th:action="@{/comment/{id}/delete(id=${comment.id})}" method="post" class="mt-2">
+                <input type="hidden" name="_method" value="delete"/>
+                <button type="submit" class="text-xs text-red-500 hover:underline">
+                    🧹 Remove evidence
+                </button>
+            </form>
+        </div>
+
+        <!-- ➕ Add Comment -->
+        <div th:if="${loggedInUser != null}" class="mt-6">
+            <form th:action="@{/post/{id}/comment(id=${post.id})}" method="post">
+        <textarea name="content" th:field="*{newComment.content}"
+                  placeholder="Spill your thoughts, dear mortal..."
+                  class="w-full p-2 rounded-lg border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring focus:border-pink-300 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white"
+                  required></textarea>
+                <button type="submit" class="mt-2 px-4 py-1 bg-pink-500 rounded hover:bg-pink-600">
+                    🗯️ Drop the mic
+                </button>
+            </form>
+        </div>
+
+        <!-- 🛑 Login prompt -->
+        <div th:if="${loggedInUser == null}" class="text-sm text-gray-600 dark:text-gray-300 mt-4">
+            Wanna add your hot take? <a th:href="@{/login}" class="text-pink-600 hover:underline">Log in</a> and spill the beans 🍵.
+        </div>
+    </section>
+
 </div>
+
+
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 

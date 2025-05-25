@@ -1,6 +1,8 @@
 package com.project.blog.controller;
 
+import com.project.blog.model.Comment;
 import com.project.blog.model.Post;
+import com.project.blog.repository.CommentRepository;
 import com.project.blog.repository.PostRepository;
 import com.project.blog.security.AppUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,12 +12,18 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 @Controller
 @RequestMapping("/post")
 public class PostController {
 
     @Autowired
     private PostRepository postRepository;
+
+    @Autowired
+    private CommentRepository commentRepository;
 
     @GetMapping("/create")
     public String createPostForm(Model model) {
@@ -29,7 +37,7 @@ public class PostController {
                            RedirectAttributes redirectAttributes) {
         post.setUser(userDetails.getUser());
         postRepository.save(post);
-        redirectAttributes.addFlashAttribute("flashMessage", "Post created successfully!");
+        redirectAttributes.addFlashAttribute("flashMessage", "✨ Your thoughts are now out in the wild!");
         return "redirect:/dashboard";
     }
 
@@ -52,9 +60,15 @@ public class PostController {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid post ID: " + id));
         model.addAttribute("post", post);
 
+        List<Comment> comments = commentRepository.findByPost(post);
+
         if (userDetails != null) {
             model.addAttribute("currentUser", userDetails.getUser());
         }
+
+        model.addAttribute("comments", comments);
+        model.addAttribute("newComment", new Comment());
+        model.addAttribute("loggedInUser", userDetails != null ? userDetails.getUser() : null);
 
         return "post_detail";
     }
