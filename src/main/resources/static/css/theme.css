@@ -228,8 +228,6 @@ animation: pulseFlame 1.4s infinite;
   0%, 100% { transform: scale(1); text-shadow: 0 0 5px #ff6347, 0 0 15px #ffa500;
 }
 
-}
-
 .glass-card {
   background: rgba(255, 255, 255, 0.15);
 backdrop-filter: blur(10px);
@@ -393,5 +391,50 @@ html.dark .text-dark {
   transition: opacity 0.3s;
   opacity: 0.7;
 }
+
+.badge-pastel {
+    background-color: #fce7f3;
+    color: #9d174d;
+    font-size: 0.75rem;
+    padding: 0.3rem 0.6rem;
+    border-radius: 999px;
+}
+
+.pastel-tag {
+    background-color: #fce7f3; /* pastel pink */
+    color: #9d174d;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+}
+
+.pastel-tag:hover {
+    background-color: #fbcfe8;
+    transform: scale(1.05);
+    cursor: pointer;
+}
+
+.tag-bubble {
+    display: inline-flex; !important
+    align-items: center; !important
+    gap: 0.2rem; /* Proper space between icon and tag text */
+    padding: 0.4rem 0.75rem; !important
+    margin: 0.3rem; /* Space between tags */
+    border-radius: 999px; !important
+    font-size: 0.75rem; !important
+    font-weight: 500; !important
+
+    background-color: #fce7f3; /* pastel pink */
+    color: #9d174d; !important
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05); !important
+    transition: all 0.3s ease; !important
+}
+
+.tag-bubble:hover {
+    background-color: #fbcfe8;
+    transform: scale(1.05);
+    cursor: pointer;
+}
+
+
 
 

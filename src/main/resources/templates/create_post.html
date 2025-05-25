@@ -11,10 +11,20 @@
 <div class="container mt-5">
     <h2>Create Post</h2>
     <form th:action="@{/post/create}" th:object="${post}" method="post">
+
+        <!--Title-->
         <div class="mb-3">
             <label>Title</label>
             <input type="text" th:field="*{title}" class="form-control" required/>
         </div>
+
+        <label for="tagInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mt-3">Tags (comma-separated)</label>
+        <input type="text" name="tagInput" id="tagInput"
+               placeholder="e.g. tech, productivity, pastel vibes"
+               class="w-full p-2 mt-1 rounded border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
+               th:value="${postTagString != null ? postTagString : ''}">
+
+        <!--Content-->
         <div class="mb-3">
             <label>Content</label>
             <textarea th:field="*{content}" class="form-control" required></textarea>
