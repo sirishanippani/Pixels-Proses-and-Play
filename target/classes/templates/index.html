@@ -1,0 +1,99 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Pixel's Proses and Play</title>
+    <link rel="stylesheet" th:href="@{/css/theme.css}">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+</head>
+<body class="homepage dark-mode">
+<div th:replace="fragments/navbar::navbar"></div>
+<div th:replace="fragments/flash :: flash"></div>
+
+<div class="container">
+
+    <!-- 🔥 Featured Posts Section -->
+    <section class="featured-section">
+        <div class="container px-3 py-2">
+            <h3 class="text-center mb-3 animate-flame">🔥 Featured Posts</h3>
+            <div class="d-flex flex-wrap justify-content-center gap-4">
+                <div th:each="post : ${featuredPosts}" class="glass-style" style="width: 280px;">
+                    <a th:href="@{/post/{id}(id=${post.id})}" class="text-decoration-none text-reset">
+                        <div class="glass-card p-3 rounded-4 shadow-sm h-100">
+                            <h5 th:text="${post.title}" class="mb-2"></h5>
+                            <p th:text="${post.content.length() > 100 ? post.content.substring(0, 100) + '...' : post.content}" class="small featured-text mb-2"></p>
+                            <div class="featured-meta small d-flex justify-content-between">
+                                <span th:text="${post.user.username}">Author</span>
+                                <span th:text="${#temporals.format(post.createdAt, 'dd MMM')}">Date</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="hero-section">
+        <div class="hero-tagline" id="tagline">✨ Write like no one’s debugging.</div>
+        <div class="hero-subtext">📚 Your thoughts deserve their own domain.</div>
+        <a href="/post/create" class="btn btn-primary create-btn">Create New Post ✍️</a>
+    </div>
+
+    <!-- Recently Published Posts Section -->
+    <div class="mt-5">
+        <h3 class="text-center mb-4">📰 Recently Published</h3>
+        <div class="recent-posts-wrapper" th:if="${recentPosts != null and !recentPosts.isEmpty()}">
+            <div th:each="post : ${recentPosts}" class="glass-style p-3 rounded-4 shadow-sm h-100">
+                <a th:href="@{/post/{id}(id=${post.id})}" class="text-decoration-none text-reset d-block h-100">
+                    <div class="card-body">
+                        <h5 class="card-title d-flex justify-content-between">
+                            <span th:text="${post.title}">Post Title</span>
+                            <span th:text="${#strings.length(post.content) > 300 ? '🔥' : '✨'}"></span>
+                        </h5>
+                        <p class="card-text" th:text="${post.content.length() > 100 ? post.content.substring(0, 100) + '...' : post.content}">Post snippet...</p>
+                        <div class="card-meta d-flex justify-content-between">
+                            <span th:text="'By ' + ${post.user.username}">By Author</span>
+                            <span th:text="${#temporals.format(post.createdAt, 'dd MMM yyyy')}">Date</span>
+                        </div>
+
+                        <!-- 🏷️ Tag display -->
+                        <div class="mt-2 d-flex flex-wrap gap-2">
+                            <span th:each="tag : ${post.tags}"
+                                  class="badge-pastel rounded-pill bg-light text-dark px-2 py-1"
+                                  style="background-color: #fce7f3; color: #9d174d; font-size: 0.75rem;">
+                                <span th:text="${tag.name}">tag</span>
+                            </span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div th:if="${recentPosts == null or recentPosts.isEmpty()}" class="text-center text-muted py-4" style="font-size: 1.1rem;">
+              <span class="d-inline-block px-3 py-2 rounded no-post-box">
+                No posts to show yet 😔
+              </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const taglines = [
+      "✨ Write like no one’s debugging.",
+      "💡 Blog it before you forget it.",
+      "🚀 Got thoughts? Spin them into words.",
+      "🧠 Ideas? Let’s blog ‘em."
+    ];
+
+    const taglineEl = document.getElementById("tagline");
+    let current = 0;
+
+    setInterval(() => {
+      current = (current + 1) % taglines.length;
+      taglineEl.textContent = taglines[current];
+    }, 4000);
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+</body>
+</html>

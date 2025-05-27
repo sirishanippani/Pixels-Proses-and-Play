@@ -1,0 +1,80 @@
+<!-- templates/admin_dashboard.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><title>Admin Panel</title>
+    <link rel="stylesheet" th:href="@{/css/theme.css}">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<script th:if="${forceLogout}" th:inline="javascript">
+    setTimeout(() => {
+      window.location.href = '/logout';
+    }, 2000);
+</script>
+
+<div th:replace="fragments/navbar :: navbar"></div>
+<div class="container mt-5">
+    <h2>Welcome, <span th:text="${admin}"></span>!</h2>
+
+    <div th:if="${flashMessage}" class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+        <span th:text="${flashMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <h4 class="mt-4">All Users</h4>
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Email</th>
+            <th>Username</th>
+            <th>Role</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="user : ${users}">
+            <td th:text="${user.id}"></td>
+            <td th:text="${user.email}"></td>
+            <td th:text="${user.username}"></td>
+            <td th:text="${user.role}"></td>
+            <td>
+                <div class="d-flex gap-2">
+                    <!-- Delete Button -->
+                    <form th:action="@{'/admin/user/delete/' + ${user.id}}" method="post">
+                        <button class="btn btn-sm btn-danger" onclick="return confirm('Delete this user?')">Delete</button>
+                    </form>
+
+                    <!-- Toggle Role Button -->
+                    <form th:action="@{'/admin/user/toggle-role/' + ${user.id}}" method="post">
+                        <button class="btn btn-sm btn-warning" onclick="return confirm('Toggle role of this user?')">Toggle Role</button>
+                    </form>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <h4 class="mt-5">All Posts</h4>
+    <table class="table table-bordered">
+        <thead><tr><th>ID</th><th>Title</th><th>Author</th><th>Action</th></tr></thead>
+        <tbody>
+        <tr th:each="post : ${posts}">
+            <td th:text="${post.id}"></td>
+            <td th:text="${post.title}"></td>
+            <td th:text="${post.user.username}"></td>
+            <td>
+                <form th:action="@{'/admin/post/delete/' + ${post.id}}" method="post">
+                    <button class="btn btn-sm btn-danger" onclick="return confirm('Delete this post?')">Delete</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

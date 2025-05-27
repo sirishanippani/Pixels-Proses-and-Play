@@ -1,0 +1,166 @@
+<!-- fragments/navbar.html -->
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+    <div th:fragment="navbar">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container-fluid">
+                <a class="navbar-brand d-flex align-items-center gap-2" href="/">
+                    <img src="/images/logo-alt.png" alt="Logo" style="height: 30px !important; max-width: 100px !important; display: inline-block;" />
+                    <span id="brandTextStatic" class="gradient-text"></span><span id="brandTextND">nd</span><span id="brandTextPlay" class="gradient-text"></span>
+                </a>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item" sec:authorize="isAuthenticated()">
+                            <a class="nav-link" href="/dashboard">Dashboard</a>
+                        </li>
+                        <li class="nav-item" sec:authorize="hasRole('USER')">
+                            <a class="nav-link" href="/posts/create">Create Post</a>
+                        </li>
+                        <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                            <a class="nav-link" href="/admin">Admin Panel</a>
+                        </li>
+                        <li class="nav-item" sec:authorize="isAnonymous()">
+                            <a class="nav-link" href="/login">Login</a>
+                        </li>
+                        <li class="nav-item" sec:authorize="isAnonymous()">
+                            <a class="nav-link" href="/register">Register</a>
+                        </li>
+
+                        <!-- Authenticated user dropdown -->
+                        <li class="nav-item dropdown" sec:authorize="isAuthenticated()">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                               data-bs-toggle="dropdown" aria-expanded="false">
+                                <span th:text="${#authentication.principal.username}">Username</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <li>
+                                    <span class="dropdown-item disabled">
+                                        Logged in as: <span th:text="${#authentication.principal.username}">Username</span>
+                                    </span>
+                                </li>
+                                <li><a class="dropdown-item" th:href="@{'/profile/' + ${#authentication.principal.username}}">Profile</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <form th:action="@{/logout}" method="post" class="px-3 py-1">
+                                        <button type="submit" class="dropdown-item">Logout</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+
+                <form class="d-flex ms-3" role="search">
+                    <input class="form-control" type="search" id="search-input" placeholder="Search posts..." aria-label="Search">
+                    <ul id="search-suggestions" class="list-group position-absolute mt-2 w-100" style="z-index: 1000;"></ul>
+                </form>
+
+                <button id="darkModeToggle" class="btn btn-sm btn-outline-secondary ms-3">🌙</button>
+            </div>
+        </nav>
+
+        <script>
+            const input = document.getElementById('search-input');
+            const suggestions = document.getElementById('search-suggestions');
+
+            input.addEventListener('input', async () => {
+              const query = input.value.trim();
+              if (!query) return suggestions.innerHTML = '';
+
+              const res = await fetch(`/search?q=${encodeURIComponent(query)}`);
+              const data = await res.json();
+
+              if (data.length === 0) {
+                suggestions.innerHTML = `<li class='list-group-item text-muted'>No results</li>`;
+              } else {
+                suggestions.innerHTML = data.map(post =>
+                  `<li class='list-group-item'><a href='/post/${post.id}' class='text-decoration-none'>${post.title}</a></li>`
+                ).join('');
+              }
+            });
+
+            const toggleBtn = document.getElementById('darkModeToggle');
+            const html = document.documentElement;
+            const savedMode = localStorage.getItem('darkMode');
+
+            if (savedMode === 'true') html.classList.add('dark');
+
+            if (toggleBtn) {
+              toggleBtn.addEventListener('click', () => {
+                html.classList.toggle('dark');
+                localStorage.setItem('darkMode', html.classList.contains('dark'));
+              });
+            }
+
+          // 🎉 Animated Brand Script
+          const basePrefix = "PixelsProses";
+          const ndText = "nd";
+          const baseSuffix = "Play";
+          const emojis = ["🎶", "📖", "🖥️", "🧠", "🎮", "⌨️", "📝", "🎭"];
+          const gradients = [
+            "linear-gradient(90deg, #1e90ff, #00ffff)",
+            "linear-gradient(90deg, #f9c5d1, #fbc2eb)",
+            "linear-gradient(90deg, #bdc3c7, #2c3e50)",
+            "linear-gradient(90deg, #d4fc79, #96e6a1)",
+            "linear-gradient(90deg, #fc466b, #3f5efb)",
+            "linear-gradient(90deg, #ffecd2, #fcb69f)",
+            "linear-gradient(90deg, #d299c2, #fef9d7)",
+            "linear-gradient(90deg, #f093fb, #f5576c)"
+          ];
+
+          const staticEl = document.getElementById("brandTextStatic");
+          const ndEl = document.getElementById("brandTextND");
+          const playEl = document.getElementById("brandTextPlay");
+
+          let emojiIndex = 0;
+
+          function typeText(prefix, nd, suffix, emoji) {
+            staticEl.textContent = "";
+            ndEl.textContent = "";
+            playEl.textContent = "";
+            staticEl.style.backgroundImage = gradients[emojiIndex];
+            playEl.style.backgroundImage = gradients[emojiIndex];
+
+            let i = 0;
+            function typePrefix() {
+              if (i < prefix.length) {
+                staticEl.textContent += prefix.charAt(i);
+                i++;
+                setTimeout(typePrefix, 80);
+              } else {
+                typeND();
+              }
+            }
+
+            function typeND() {
+              ndEl.innerHTML = `<span>${nd}</span>`;
+              setTimeout(typeSuffix, 300);
+            }
+
+            let j = 0;
+            const fullSuffix = suffix + emoji + "()";
+            function typeSuffix() {
+              if (j < fullSuffix.length) {
+                playEl.textContent += fullSuffix.charAt(j);
+                j++;
+                setTimeout(typeSuffix, 80);
+              } else {
+                emojiIndex = (emojiIndex + 1) % emojis.length;
+                setTimeout(() => typeText(basePrefix, ndText, baseSuffix, emojis[emojiIndex]), 3000);
+              }
+            }
+
+            typePrefix();
+          }
+
+          document.addEventListener("DOMContentLoaded", () => {
+            typeText(basePrefix, ndText, baseSuffix, emojis[emojiIndex]);
+          });
+        </script>
+    </div>
+</html>
