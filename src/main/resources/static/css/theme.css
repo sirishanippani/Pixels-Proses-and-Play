@@ -509,6 +509,16 @@ html.dark .navbar {
   background-color: rgba(30, 30, 30, 0.9) !important;
 }
 
+html.dark .glass-style {
+  background: rgba(30, 30, 30, 0.4);
+  color: #eee;
+}
+
+html.dark input {
+  background-color: #1f1f1f;
+  color: #eee;
+  border-color: #444;
+}
 
 
 
