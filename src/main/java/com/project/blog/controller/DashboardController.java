@@ -34,9 +34,11 @@ public class DashboardController {
 
         List<Post> posts = postRepository.findByUser(user);
         posts.forEach(p -> {
-            if (p.getContent().length() > 150) {
-                p.setContent(p.getContent().substring(0, 150) + "...");
+            String plainText = p.getContent().replaceAll("<[^>]*>", "");
+            if (plainText.length() > 150) {
+                plainText = plainText.substring(0, 150) + "...";
             }
+            p.setContent(plainText);
         });
 
         model.addAttribute("posts", posts);

@@ -92,7 +92,7 @@
                             <span th:text="${post.title}">Post Title</span>
                             <span class="emoji-badge" th:text="${#strings.length(post.content) > 300 ? '🔥' : '✨'}"></span>
                         </h5>
-                        <p class="card-text" th:text="${post.content.length() > 150 ? post.content.substring(0, 150) + '...' : post.content}">Post preview...</p>
+                        <p class="card-text" th:text="${post.content}">Post preview...</p>
                     </div>
                 </a>
                 <div class="card-footer d-flex justify-content-between">

@@ -18,9 +18,23 @@ public class HomeController {
     @GetMapping("/")
     public String home(Model model) {
         List<Post> randomFeatured = postRepository.findRandomPosts();
+        randomFeatured.forEach(p -> {
+            String plain = p.getContent().replaceAll("<[^>]*>", "");
+            if (plain.length() > 150) {
+                plain = plain.substring(0, 150) + "...";
+            }
+            p.setContent(plain);
+        });
         model.addAttribute("featuredPosts", randomFeatured);
 
         List<Post> recentPosts = postRepository.findTop10ByOrderByCreatedAtDesc();
+        recentPosts.forEach(p -> {
+            String plain = p.getContent().replaceAll("<[^>]*>", "");
+            if (plain.length() > 150) {
+                plain = plain.substring(0, 150) + "...";
+            }
+            p.setContent(plain);
+        });
         model.addAttribute("recentPosts", recentPosts);
         return "index";
     }
