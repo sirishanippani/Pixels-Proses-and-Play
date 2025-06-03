@@ -1,8 +1,0 @@
-services:
-  - type: web
-    name: pixels-prose-and-play
-    buildCommand: "./mvnw clean package -DskipTests"
-    startCommand: "java -jar target/blog-0.0.1-SNAPSHOT.jar"
-    envVars:
-      - key: PORT
-        value: 8080

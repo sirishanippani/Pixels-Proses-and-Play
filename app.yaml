@@ -1,0 +1,9 @@
+runtime: java17
+instance_class: F1
+entrypoint: java -jar app.jar
+
+env_variables:
+  SPRING_PROFILES_ACTIVE: prod
+  DB_USER: sqladmin
+  DB_PASS: sqlPass@123
+  INSTANCE_CONNECTION_NAME: pixels-proses-play-461812:asia-south1:blog-storage
