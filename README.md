@@ -29,7 +29,7 @@ A pastel-themed, feature-rich blogging platform built with **Spring Boot + Thyme
 | 🧠 Backend    | Java, Spring Boot, Spring Security     |
 | 🎨 Frontend   | Thymeleaf, Bootstrap, Toast UI Editor |
 | 💾 Database   | MySQL / H2 (dev)                       |
-| ☁️ Deployment | [Render](https://render.com/)          |
+| ☁️ Deployment | Google Cloud Hosting                   |
 | 🔐 Security   | Spring Security, BCrypt                |
 
 ---
@@ -69,4 +69,4 @@ Special thanks to late-night bugs, color palettes, and Stack Overflow 🫶
 ---
 
 🌐 Live Demo
-🔗 pixels-prose-and-play.onrender.com
+🔗 [pixels-prose-and-play.onrender.com](http://pixels-proses-play-461812.el.r.appspot.com/)
