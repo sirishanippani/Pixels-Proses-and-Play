@@ -52,10 +52,21 @@
 - [x] **Phase 0** — Secrets purge *(skipped by user: creds were dummy, repo never leaked public)*
 - [x] **Phase 1** — Safety net: H2 local profile, `application.properties` default, 6 passing safety-net tests (`PostRepositoryTest`, `AuthControllerTest`, `SmokeTest`)
 - [x] **Phase 2** — Data-corruption bug: `PostSummaryDto` (record, 6 fields including `tagNames`), `PostSummaryMapper` (`@Component`, centralized HTML-strip + truncate + tag sort). `HomeController` and `DashboardController` migrated to constructor injection + DTO mapping. `DataCorruptionBugTest` added as regression guard. All 7 tests passing.
-- [ ] **Phase 3** — Service layer (**next**). Extract `PostService`, `UserService`, `CommentService`, `AdminService`, `ProfileService`. Move business logic out of controllers one at a time. Migrate every controller to constructor injection as we go. Teaching focus: `@Transactional` boundaries, anemic domain vs transaction script, framework-type leakage (principal shape).
+- [ ] **Phase 3** — Service layer (**in progress**). Extract `PostService`, `UserService`, `CommentService`, `AdminService`. Strangler-fig migration — one controller slice per commit. Teaching focus: `@Transactional` boundaries, anemic domain vs transaction script, framework-type leakage (principal shape), exceptions as domain boundary signals.
+    - [x] `PostService` with reads (`getFeaturedPosts`, `getRecentPosts`, `getPostsByUser`, `searchByTitle`, `getPostForView`, `getPostForEdit`) and writes (`createPost`, `updatePost`, `deletePost`). Class-level `@Transactional(readOnly = true)`; writes override.
+    - [x] `TagService` extracted for CSV tag parsing (`resolveOrCreate`). Joins the enclosing `PostService` transaction via default REQUIRED propagation.
+    - [x] `HomeController`, `DashboardController`, `ProfileController`, `SearchController`, `PostController` migrated to constructor injection + `PostService`.
+    - [x] New `com.project.blog.exception` package. `PostOwnershipException` — service throws, controller catches, redirects to `/dashboard`. `PostNotFoundException` — annotated `@ResponseStatus(NOT_FOUND)`, Spring renders the custom 404 template instead of a 500.
+    - [x] `PostSearchResultDto` converted to a `record` + `PostSearchResultMapper` added.
+    - [x] Template fix (pre-existing, surfaced in manual QA): `edit_post.html` hidden `#content` input now pre-fills via `th:value="${post.content}"` so Toast Editor loads with existing content.
+    - [ ] `CommentService` + migrate `CommentController`, including the stray `CommentRepository` field injection still in `PostController`.
+    - [ ] `AdminService` + migrate `AdminController`.
+    - [ ] `UserService` + migrate `ProfileController`'s field-injected `UserRepository`.
+    - [ ] Real tests for write paths — `@WebMvcTest` for `PostController` happy path + ownership redirect; Mockito unit tests for `PostService` (`updatePost` preserves content, ownership exception, create happy path); template smoke that `edit_post` pre-fills content.
 - [ ] **Phase 4** — Form DTOs + Bean Validation. `RegisterRequest`, `PostForm`, `ProfileForm`, `CommentForm`. Closes mass-assignment vulnerability on `/register` (currently binds raw `User` entity, lets attacker set `role=ROLE_ADMIN`).
 - [ ] **Phase 5** — Portability. Replace `RAND()` native query with a portable approach. Add Flyway; set `ddl-auto=validate`. Fix N+1 on tags via `@EntityGraph`. Split `application-mysql.properties` and `application-postgres.properties`. Make the DB layer genuinely pluggable via Spring profiles.
 - [ ] **Phase 6** — Security + hygiene. Disable OSIV (`spring.jpa.open-in-view=false`). Delete `/whoami` debug endpoint and `test_logo.html`. Harden file upload (MIME whitelist, drop original filename). Remove `target/` from git tracking, fix `.gitignore`. Replace stack-trace prints with SLF4J.
+- [ ] **Phase 6.5** — UI/UX polish. Aesthetic target: *cozy but editorial* — Medium-grade typography, muted palette, generous whitespace, intentional small personality moments (random homepage greeting, post-creation copy, 404 page) rather than emoji-per-sentence density. Centralize hard-coded flash messages into `messages.properties` (i18n-ready; one line in Technologies Used for the report). Add loading states (Toast Editor, search, feed queries). Rewrite copy currently in controllers (`✨ Your thoughts are now out in the wild!`, `🧍‍♀️ Whoopsie!`, `👑 New role unlocked!`, etc.) to editorial-grade register with occasional warmth.
 - [ ] **Phase 7** — Deployment. Recommended stack: Render (free web service) + Neon (free Postgres). Dockerfile with `-XX:MaxRAMPercentage=75.0`, env-var secrets, `/health` endpoint, UptimeRobot keep-alive every 14 minutes.
 - [ ] **Report** — 40+ pages against Scaler Neovarsity Backend Specialization template. Sections: Abstract, Project Description, Requirement Gathering, Class Diagrams, DB Schema Design, Feature Development Process, Deployment Flow, Technologies Used, Conclusion, References. Report writing happens in parallel with Phase 5 onward.
 
@@ -69,6 +80,14 @@
 - **Mapper sorts tag names** to avoid non-deterministic Set iteration order in UI.
 - **`DataCorruptionBugTest` kept as a forward-looking invariant**, even though it didn't reproduce the bug in MockMvc. The invariant "post content survives a page visit" is correct regardless.
 - **OSIV investigation deferred to Phase 6.** MockMvc doesn't fully replicate the OSIV filter chain. Fix is to disable OSIV globally, not to perfectly reproduce the bug.
+- **Strangler-fig refactor over big-bang** for Phase 3. Each controller migrates in its own commit; the codebase is temporarily mixed-state (some controllers through service, some direct to repo) and that's accepted — small reversible steps over one giant unreviewable change.
+- **Service methods accept primitives, not entities.** `createPost(user, title, content, tagCsv)` rather than `createPost(Post)`. Structurally confines mass-assignment to the controller's binding layer; even if an attacker sets `role=ROLE_ADMIN` on the form, it cannot cross the service seam. Phase 4's form DTOs close the remaining gap at the binding target.
+- **One mapper per DTO even for trivial projections.** `PostSearchResultMapper` is one line of code; kept as a `@Component` because it's a seam — a future JPA constructor projection or caching layer hides behind it without touching the service or controller.
+- **Single-item reads return the JPA entity**, not a DTO. CLAUDE.md mandates DTOs for list views; view/edit of one post is a judgment call we take so slices stay small. Reliance on OSIV for lazy-loaded `post.getTags()` in the template is already-logged Phase 6 debt — not new.
+- **Ownership failure as a domain exception**, not `Optional`/boolean. Service throws `PostOwnershipException` (no `@ResponseStatus` — handling is a redirect, not an HTTP status). "Not found" is a different cause and gets its own `PostNotFoundException` with `@ResponseStatus(NOT_FOUND)` so Spring maps it to the custom 404 template.
+- **Transaction propagation stays at Spring's default (`REQUIRED`).** `TagService.resolveOrCreate` joins `PostService.updatePost`'s write transaction, so tag inserts and post updates commit (or roll back) together. No hand-rolled transaction management.
+- **Exceptions in a dedicated package** (`com.project.blog.exception`) rather than alongside the service that throws them. Keeps the service file focused and gives us one import root for Phase 6's eventual `@ControllerAdvice`.
+- **UI aesthetic direction set early** (see Phase 6.5): *cozy but editorial*, Medium-adjacent typography and spacing, personality via copy restraint rather than emoji density. Captured now so we don't drift and so copy work isn't done twice (controller flash messages will move to `messages.properties` in the same phase).
 
 ## Known Tech Debt (With Phase Owner)
 
@@ -83,6 +102,13 @@
 - **`target/`** committed to git; `.gitignore` has malformed `target/` block → Phase 6.
 - **MySQL driver uses old `mysql-connector-java` coordinates** → Phase 5 (switch to `com.mysql:mysql-connector-j`, let BOM manage version).
 - **No real tests** beyond safety-net; need @DataJpaTest for `PostRepository.findRandomPosts`, service-layer unit tests with Mockito → Phase 3+.
+- **PostController silently redirects to `/dashboard`** on ownership failure for update/delete — users receive no feedback that their action was rejected → Phase 4 (form error state) or Phase 6.5 (flash message copy).
+- **`@ModelAttribute Post` form binding** on create/update still permits mass-assignment on fields the service happens to ignore. The service seam protects persistence; the binding target does not. → Phase 4 (`PostForm` record).
+- **`ProfileController` field-injects `UserRepository`** → Phase 3 (`UserService` slice).
+- **`PostController` field-injects `CommentRepository`** → Phase 3 (`CommentService` slice).
+- **No regression test for the `edit_post.html` content pre-fill fix** → Phase 3 (template smoke).
+- **No tests for the write paths** (`createPost`, `updatePost`, `deletePost`, ownership rejection, 404 for missing post) → Phase 3+.
+- **Emoji-dense, hard-coded flash messages** in `PostController`, `ProfileController`, `CommentController`, `AdminController` — reads as AI-generated → Phase 6.5 (rewrite + `messages.properties`).
 
 ## Test Suite Status
 
@@ -134,3 +160,7 @@ Use these as talking points when writing the report. Add examples as they arise.
 - **Anti-Corruption Layer (DDD):** keeping framework types (`AppUserDetails`) out of business logic.
 - **Conventional Commits + commit-as-documentation:** `git log` as a readable design history.
 - **Known-debt discipline:** flagging in commit messages, not hiding.
+- **Strangler-fig refactor:** replacing a dependency piece by piece behind a thin interface, keeping the system runnable at every step. Phase 3 is the project's demonstration case.
+- **Exceptions as boundary signals:** service throws domain exceptions; `@ResponseStatus` or a `catch` in the controller translates to HTTP. The exception travels; the transport mapping is pluggable (same exception could become `403 Forbidden` in a REST API).
+- **Transaction propagation (`REQUIRED`):** cross-service atomicity (`PostService` + `TagService`) without hand-rolled transaction management; the single declarative annotation replaces explicit begin/commit/rollback.
+- **Mass-assignment, defense in depth:** structural prevention at the service seam (primitive parameters, no entity-shaped input), binding-level fix in Phase 4 (form DTOs replace raw-entity `@ModelAttribute`).
