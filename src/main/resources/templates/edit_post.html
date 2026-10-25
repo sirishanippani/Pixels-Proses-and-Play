@@ -33,8 +33,8 @@
         <div class="mb-3">
             <label>Content</label>
             <div id="toast-editor"></div>
-            <!-- Hidden input to capture HTML content -->
-            <input type="hidden" name="content" id="content"/>
+            <!-- Hidden input to capture HTML content; pre-filled so the editor loads with existing content on edit -->
+            <input type="hidden" name="content" id="content" th:value="${post.content}"/>
         </div>
 
         <button type="submit" class="btn btn-primary">Update</button>

@@ -4,6 +4,7 @@ import com.project.blog.dto.PostSearchResultDto;
 import com.project.blog.dto.PostSearchResultMapper;
 import com.project.blog.dto.PostSummaryDto;
 import com.project.blog.dto.PostSummaryMapper;
+import com.project.blog.exception.PostNotFoundException;
 import com.project.blog.exception.PostOwnershipException;
 import com.project.blog.model.Post;
 import com.project.blog.model.User;
@@ -12,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @Service
 @Transactional(readOnly = true)
@@ -59,12 +59,12 @@ public class PostService {
 
     public Post getPostForView(Long id) {
         return postRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Post not found: " + id));
+                .orElseThrow(() -> new PostNotFoundException(id));
     }
 
     public Post getPostForEdit(Long id, User requester) {
         Post post = postRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Post not found: " + id));
+                .orElseThrow(() -> new PostNotFoundException(id));
         assertOwnership(post, requester);
         return post;
     }
@@ -82,7 +82,7 @@ public class PostService {
     @Transactional
     public Post updatePost(Long id, User requester, String title, String content, String tagCsv) {
         Post post = postRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Post not found: " + id));
+                .orElseThrow(() -> new PostNotFoundException(id));
         assertOwnership(post, requester);
         post.setTitle(title);
         post.setContent(content);
@@ -93,7 +93,7 @@ public class PostService {
     @Transactional
     public void deletePost(Long id, User requester) {
         Post post = postRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Post not found: " + id));
+                .orElseThrow(() -> new PostNotFoundException(id));
         assertOwnership(post, requester);
         postRepository.delete(post);
     }
