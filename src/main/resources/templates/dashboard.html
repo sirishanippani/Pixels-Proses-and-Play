@@ -90,9 +90,9 @@
                     <div class="card-body">
                         <h5 class="card-title">
                             <span th:text="${post.title}">Post Title</span>
-                            <span class="emoji-badge" th:text="${#strings.length(post.content) > 300 ? '🔥' : '✨'}"></span>
+                            <span class="emoji-badge" th:text="${#strings.length(post.summary) > 300 ? '🔥' : '✨'}"></span>
                         </h5>
-                        <p class="card-text" th:text="${post.content}">Post preview...</p>
+                        <p class="card-text" th:text="${post.summary}">Post preview...</p>
                     </div>
                 </a>
                 <div class="card-footer d-flex justify-content-between">

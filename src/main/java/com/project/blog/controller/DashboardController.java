@@ -1,5 +1,7 @@
 package com.project.blog.controller;
 
+import com.project.blog.dto.PostSummaryDto;
+import com.project.blog.dto.PostSummaryMapper;
 import com.project.blog.model.Post;
 import com.project.blog.model.User;
 import com.project.blog.repository.PostRepository;
@@ -18,29 +20,18 @@ import java.util.List;
 @Controller
 public class DashboardController {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final PostRepository postRepository;
+    private final PostSummaryMapper summaryMapper;
 
-    @Autowired
-    private PostRepository postRepository;
+    public DashboardController(PostRepository postRepository, PostSummaryMapper summaryMapper) {
+        this.postRepository = postRepository;
+        this.summaryMapper = summaryMapper;
+    }
 
     @GetMapping("/dashboard")
-    public String userDashboard(Model model, @AuthenticationPrincipal AppUserDetails userDetails, HttpServletRequest request) {
-        System.out.println("CSRF token in request: " + request.getAttribute("_csrf"));
-        User user = userDetails.getUser(); // or getId()
-
-        CsrfToken csrfToken = (CsrfToken) request.getAttribute("_csrf");
-        model.addAttribute("_csrf", csrfToken);
-
-        List<Post> posts = postRepository.findByUser(user);
-        posts.forEach(p -> {
-            String plainText = p.getContent().replaceAll("<[^>]*>", "");
-            if (plainText.length() > 150) {
-                plainText = plainText.substring(0, 150) + "...";
-            }
-            p.setContent(plainText);
-        });
-
+    public String userDashboard(Model model, @AuthenticationPrincipal AppUserDetails userDetails) {
+        List<PostSummaryDto> posts = postRepository.findByUser(userDetails.getUser()).stream()
+                .map(summaryMapper::toDto).toList();
         model.addAttribute("posts", posts);
         return "dashboard";
     }
