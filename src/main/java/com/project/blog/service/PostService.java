@@ -4,12 +4,15 @@ import com.project.blog.dto.PostSearchResultDto;
 import com.project.blog.dto.PostSearchResultMapper;
 import com.project.blog.dto.PostSummaryDto;
 import com.project.blog.dto.PostSummaryMapper;
+import com.project.blog.exception.PostOwnershipException;
+import com.project.blog.model.Post;
 import com.project.blog.model.User;
 import com.project.blog.repository.PostRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 @Transactional(readOnly = true)
@@ -18,13 +21,16 @@ public class PostService {
     private final PostRepository postRepository;
     private final PostSummaryMapper summaryMapper;
     private final PostSearchResultMapper searchResultMapper;
+    private final TagService tagService;
 
     public PostService(PostRepository postRepository,
                        PostSummaryMapper summaryMapper,
-                       PostSearchResultMapper searchResultMapper) {
+                       PostSearchResultMapper searchResultMapper,
+                       TagService tagService) {
         this.postRepository = postRepository;
         this.summaryMapper = summaryMapper;
         this.searchResultMapper = searchResultMapper;
+        this.tagService = tagService;
     }
 
     public List<PostSummaryDto> getFeaturedPosts() {
@@ -49,5 +55,53 @@ public class PostService {
         return postRepository.findByTitleContainingIgnoreCase(query).stream()
                 .map(searchResultMapper::toDto)
                 .toList();
+    }
+
+    public Post getPostForView(Long id) {
+        return postRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Post not found: " + id));
+    }
+
+    public Post getPostForEdit(Long id, User requester) {
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Post not found: " + id));
+        assertOwnership(post, requester);
+        return post;
+    }
+
+    @Transactional
+    public Post createPost(User author, String title, String content, String tagCsv) {
+        Post post = new Post();
+        post.setUser(author);
+        post.setTitle(title);
+        post.setContent(content);
+        post.setTags(tagService.resolveOrCreate(tagCsv));
+        return postRepository.save(post);
+    }
+
+    @Transactional
+    public Post updatePost(Long id, User requester, String title, String content, String tagCsv) {
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Post not found: " + id));
+        assertOwnership(post, requester);
+        post.setTitle(title);
+        post.setContent(content);
+        post.setTags(tagService.resolveOrCreate(tagCsv));
+        return postRepository.save(post);
+    }
+
+    @Transactional
+    public void deletePost(Long id, User requester) {
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Post not found: " + id));
+        assertOwnership(post, requester);
+        postRepository.delete(post);
+    }
+
+    private void assertOwnership(Post post, User requester) {
+        if (!post.getUser().getUsername().equals(requester.getUsername())) {
+            throw new PostOwnershipException(
+                    "User " + requester.getUsername() + " does not own post " + post.getId());
+        }
     }
 }
