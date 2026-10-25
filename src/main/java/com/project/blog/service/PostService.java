@@ -1,5 +1,7 @@
 package com.project.blog.service;
 
+import com.project.blog.dto.PostSearchResultDto;
+import com.project.blog.dto.PostSearchResultMapper;
 import com.project.blog.dto.PostSummaryDto;
 import com.project.blog.dto.PostSummaryMapper;
 import com.project.blog.model.User;
@@ -15,10 +17,14 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final PostSummaryMapper summaryMapper;
+    private final PostSearchResultMapper searchResultMapper;
 
-    public PostService(PostRepository postRepository, PostSummaryMapper summaryMapper) {
+    public PostService(PostRepository postRepository,
+                       PostSummaryMapper summaryMapper,
+                       PostSearchResultMapper searchResultMapper) {
         this.postRepository = postRepository;
         this.summaryMapper = summaryMapper;
+        this.searchResultMapper = searchResultMapper;
     }
 
     public List<PostSummaryDto> getFeaturedPosts() {
@@ -36,6 +42,12 @@ public class PostService {
     public List<PostSummaryDto> getPostsByUser(User user) {
         return postRepository.findByUser(user).stream()
                 .map(summaryMapper::toDto)
+                .toList();
+    }
+
+    public List<PostSearchResultDto> searchByTitle(String query) {
+        return postRepository.findByTitleContainingIgnoreCase(query).stream()
+                .map(searchResultMapper::toDto)
                 .toList();
     }
 }

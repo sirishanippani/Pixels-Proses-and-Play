@@ -1,29 +1,29 @@
 package com.project.blog.controller;
 
 import com.project.blog.dto.PostSearchResultDto;
-import com.project.blog.repository.PostRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.project.blog.service.PostService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @RestController
 public class SearchController {
 
-    @Autowired
-    private PostRepository postRepository;
+    private static final Logger log = LoggerFactory.getLogger(SearchController.class);
+
+    private final PostService postService;
+
+    public SearchController(PostService postService) {
+        this.postService = postService;
+    }
 
     @GetMapping("/search")
     public List<PostSearchResultDto> searchPosts(@RequestParam("q") String query) {
-        System.out.println("Searching for: " + query);
-        return postRepository.findByTitleContainingIgnoreCase(query)
-                .stream()
-                .map(post -> new PostSearchResultDto(post.getId(), post.getTitle()))
-                .collect(Collectors.toList());
+        log.debug("Searching for: {}", query);
+        return postService.searchByTitle(query);
     }
 }
