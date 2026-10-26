@@ -18,15 +18,21 @@
     <div class="w-100 w-md-50 d-flex align-items-center justify-content-center">
         <div class="p-5 glass-style rounded-4 shadow" style="width: 100%; max-width: 400px;">
             <h2 class="mb-4 text-center">Join the chaos 📝</h2>
-            <form th:action="@{/register}" th:object="${user}" method="post">
+            <form th:action="@{/register}" th:object="${registerRequest}" method="post" novalidate>
                 <div class="mb-3">
-                    <input type="text" class="form-control pastel-input" th:field="*{username}" placeholder="Pick your name wisely... 👀" required />
+                    <input type="text" class="form-control pastel-input" th:field="*{username}"
+                           th:errorclass="is-invalid" placeholder="Pick your name wisely... 👀" />
+                    <div class="invalid-feedback" th:errors="*{username}"></div>
                 </div>
                 <div class="mb-3">
-                    <input type="email" class="form-control pastel-input" th:field="*{email}" placeholder="Magical inbox ✨" required />
+                    <input type="email" class="form-control pastel-input" th:field="*{email}"
+                           th:errorclass="is-invalid" placeholder="Magical inbox ✨" />
+                    <div class="invalid-feedback" th:errors="*{email}"></div>
                 </div>
                 <div class="mb-3">
-                    <input type="password" class="form-control pastel-input" th:field="*{password}" placeholder="Choose your secret code 🔐" required />
+                    <input type="password" class="form-control pastel-input" th:field="*{password}"
+                           th:errorclass="is-invalid" placeholder="Choose your secret code 🔐" />
+                    <div class="invalid-feedback" th:errors="*{password}"></div>
                 </div>
                 <button type="submit" class="btn btn-pink w-100">Start Posting 🌈</button>
             </form>
