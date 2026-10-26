@@ -53,8 +53,8 @@
 - [x] **Phase 1** — Safety net: H2 local profile, `application.properties` default, 6 passing safety-net tests (`PostRepositoryTest`, `AuthControllerTest`, `SmokeTest`)
 - [x] **Phase 2** — Data-corruption bug: `PostSummaryDto` (record, 6 fields including `tagNames`), `PostSummaryMapper` (`@Component`, centralized HTML-strip + truncate + tag sort). `HomeController` and `DashboardController` migrated to constructor injection + DTO mapping. `DataCorruptionBugTest` added as regression guard. All 7 tests passing.
 - [x] **Phase 3** — Service layer. `PostService`, `TagService`, `CommentService`, `AdminService`, `UserService` extracted. Every controller on constructor injection; field injection count = 0. New `com.project.blog.exception` package: `PostOwnershipException`, `PostNotFoundException`, `CommentOwnershipException` (carries `postId`), `CommentNotFoundException`, `UserNotFoundException`. Not-found exceptions annotated `@ResponseStatus(NOT_FOUND)` for direct Spring HTTP mapping; ownership exceptions caught by controllers and translated to redirects. Password encoding moved from `AuthController` into `UserService.register`; service accepts primitives, structurally closing the `/register` mass-assignment hole ahead of Phase 4. Services accept primitive parameters throughout — entity never crosses the service seam on writes. Test suite established the project's three-pattern baseline (unit via Mockito, `@WebMvcTest`, `@DataJpaTest`). Pre-existing bug fixes landed opportunistically: `edit_post.html` content pre-fill, `/post/<deleted-id>` 500 → 404, upload directory auto-create.
-- [ ] **Phase 4** — Form DTOs + Bean Validation (**next**). `RegisterRequest`, `PostForm`, `ProfileForm`, `CommentForm`. Closes mass-assignment at the binding target (Phase 3 already closed it at the service seam — this is defense in depth). Teaching focus: `@Valid` + `BindingResult`, `jakarta.validation` constraints, field-level error rendering in Thymeleaf, DTO vs entity binding targets.
-- [ ] **Phase 5** — Portability. Replace `RAND()` native query with a portable approach. Add Flyway; set `ddl-auto=validate`. Fix N+1 on tags via `@EntityGraph`. Split `application-mysql.properties` and `application-postgres.properties`. Make the DB layer genuinely pluggable via Spring profiles.
+- [x] **Phase 4** — Form DTOs + Bean Validation. `spring-boot-starter-validation` added. Four form records with `jakarta.validation` constraints: `RegisterRequest`, `PostForm`, `ProfileForm`, `CommentForm`. Every write endpoint (register, post create/edit, profile edit, comment) migrated to `@Valid @ModelAttribute <form>` + `BindingResult`; templates bind via `th:object="${...Form}"`, render per-field errors with `th:errors` / `th:errorclass`, and declare `novalidate` so the server is the authoritative validator. Custom `@NotBlankHtml` constraint (annotation + `ConstraintValidator`) in `com.project.blog.validation` for WYSIWYG-backed fields that `@NotBlank` lets through. Comment form uses the Post-Redirect-Get idiom with flashed form + binding result to survive the inline-on-post-detail round-trip. Mass-assignment is now structurally impossible across every form: the DTOs expose only the fields the audience is allowed to set.
+- [ ] **Phase 5** — Portability (**next**). Replace `RAND()` native query with a portable approach. Add Flyway; set `ddl-auto=validate`. Fix N+1 on tags via `@EntityGraph`. Split `application-mysql.properties` and `application-postgres.properties`. Make the DB layer genuinely pluggable via Spring profiles.
 - [ ] **Phase 6** — Security + hygiene. Disable OSIV (`spring.jpa.open-in-view=false`). Delete `/whoami` debug endpoint and `test_logo.html`. Harden file upload (MIME whitelist, drop original filename). Remove `target/` from git tracking, fix `.gitignore`. Replace stack-trace prints with SLF4J.
 - [ ] **Phase 6.5** — UI/UX polish. Aesthetic target: *cozy but editorial* — Medium-grade typography, muted palette, generous whitespace, intentional small personality moments (random homepage greeting, post-creation copy, 404 page) rather than emoji-per-sentence density. Centralize hard-coded flash messages into `messages.properties` (i18n-ready; one line in Technologies Used for the report). Add loading states (Toast Editor, search, feed queries). Rewrite copy currently in controllers (`✨ Your thoughts are now out in the wild!`, `🧍‍♀️ Whoopsie!`, `👑 New role unlocked!`, etc.) to editorial-grade register with occasional warmth.
 - [ ] **Phase 7** — Deployment. Recommended stack: Render (free web service) + Neon (free Postgres). Dockerfile with `-XX:MaxRAMPercentage=75.0`, env-var secrets, `/health` endpoint, UptimeRobot keep-alive every 14 minutes.
@@ -84,6 +84,11 @@
 - **Exceptions carry context the caller needs**, not just a message. `CommentOwnershipException` holds the parent `postId` so the controller can redirect back to the post without re-querying. Service decides what context to publish; controller consumes.
 - **Admin operations are their own service (`AdminService`), not spread across `UserService`.** Role-privileged ops (`deleteUser`, `toggleUserRole`, `getAllPosts`) and user-privileged ops (`register`, `updateProfile`) have different authorization models and lifecycles — mixing them hides that difference.
 - **`Optional` for "may be absent as a normal input domain outcome"; exception for "absent means caller's assumption was violated."** `UserService.findByUsername` returns `Optional` (URL path may name a nonexistent user). `UserService.updateProfile` throws `UserNotFoundException` (authenticated caller is expected to exist; miss means data corruption).
+- **Form DTO per input boundary, not per entity.** Phase 4's four records (`RegisterRequest`, `PostForm`, `ProfileForm`, `CommentForm`) exist because *the shape of acceptable HTTP input* is a different concern from *the shape of storage*. A field appearing on a form DTO is an explicit statement that the form's audience is allowed to write to it; a field missing is an implicit refusal that Spring's binder enforces by silently dropping unknown parameters. Combined with Phase 3's service-seam primitives, this is defense in depth: binding and persistence refuse separately.
+- **Custom `ConstraintValidator`s extend Jakarta Validation when a built-in isn't enough.** `@NotBlank` passes WYSIWYG empty shells like `<p><br></p>` because they're not whitespace-only; `@NotBlankHtml` strips tags before checking emptiness. Validators are plain classes with no Spring coupling unless they need a bean (then `@Component`). Unit-test them with `new` and plain JUnit.
+- **Path identifiers and session identity never belong on a form DTO.** `postId` for post edit comes from `@PathVariable`; `currentUsername` for profile edit comes from `@AuthenticationPrincipal`. Putting them on the form would let an attacker POST a different value than the URL/session says — the DTO carries data the user is changing, nothing else.
+- **Post-Redirect-Get for form submissions**, especially when the error-render path shares a template with another controller's GET. `RedirectAttributes.addFlashAttribute(...)` with the magic key `"org.springframework.validation.BindingResult.<attr>"` preserves validation errors across the redirect. The GET handler guards its form seeding with `model.containsAttribute(...)` so the flashed state isn't overwritten by the empty-form seed. Avoids re-POST on refresh and keeps template-population logic in one place.
+- **`novalidate` on `<form>` tags** so the server is the single source of truth for validation. HTML5 `required` is UX, not security — any HTTP client bypasses it. Validation rules may be added back selectively as a Phase 6.5 UX polish, but the server-side rules remain authoritative.
 
 ## Known Tech Debt (With Phase Owner)
 
@@ -98,7 +103,8 @@
 - **`target/`** committed to git; `.gitignore` has malformed `target/` block → Phase 6.
 - **MySQL driver uses old `mysql-connector-java` coordinates** → Phase 5 (switch to `com.mysql:mysql-connector-j`, let BOM manage version).
 - **PostController silently redirects to `/dashboard`** on ownership failure for update/delete — users receive no feedback that their action was rejected → Phase 4 (form error state) or Phase 6.5 (flash message copy).
-- **`@ModelAttribute Post`/`@ModelAttribute User` form binding** still permits mass-assignment on fields the service happens to ignore. The service seam protects persistence; the binding target does not. → Phase 4 (`PostForm`, `RegisterRequest`, `ProfileForm` records).
+- **User-submitted HTML content is rendered without a sanitizer** on the post detail page (via `th:utext` or similar). `@NotBlankHtml` validates presence but does not sanitize — a crafted `<script>` in post content would execute. Needs OWASP Java HTML Sanitizer or similar allowlist before any public hosting. → Phase 6 security hygiene (same slice as `StorageService` for uploads).
+- **Client-side `required` was removed from forms** when migrating to `novalidate`; browsers no longer prompt on empty fields. Server-side validation catches it, but the UX hop (full form POST → re-render) is heavier than a native prompt. Can re-add `required` on fields that are also `@NotBlank` as a Phase 6.5 polish, keeping server as source of truth.
 - **Emoji-dense, hard-coded flash messages** in `PostController`, `ProfileController`, `CommentController`, `AdminController` — reads as AI-generated → Phase 6.5 (rewrite + `messages.properties`).
 - **`User.getRole()` returns `String`** (overriding Lombok's enum getter via `role.name()`). A field typed `Role` exposed as `String` is a trap for any caller who assumes the Lombok shape. → Phase 4 or 6 (needs audit of Spring Security use sites first).
 - **`admin/user/toggle-role/{id}` flash is misleading when user id does not exist** — currently says "Someone just got a promotion…" even on a no-op. → Phase 6.5 (copy pass).
@@ -112,7 +118,7 @@
 
 ## Test Suite Status
 
-- Total: 15 passing
+- Total: 20 passing
 - Full-context (`@SpringBootTest`):
     - `BlogApplicationTests.contextLoads`
     - `AuthControllerTest.register_persistsUserWithEncodedPassword`
@@ -132,6 +138,12 @@
     - `PostServiceTest.getPostForView_throwsPostNotFoundExceptionWhenMissing`
     - `TagServiceTest.resolveOrCreate_returnsEmptySetForBlankOrNullInput`
     - `TagServiceTest.resolveOrCreate_reusesExistingTagsLowercasesAndCreatesMissingOnes`
+- Validator unit (plain JUnit, no framework):
+    - `NotBlankHtmlValidatorTest.nullIsInvalid`
+    - `NotBlankHtmlValidatorTest.emptyStringIsInvalid`
+    - `NotBlankHtmlValidatorTest.whitespaceOnlyIsInvalid`
+    - `NotBlankHtmlValidatorTest.wysiwygEmptyShellIsInvalid`
+    - `NotBlankHtmlValidatorTest.realContentIsValid`
 
 ## Commit Discipline
 
@@ -176,3 +188,5 @@ Use these as talking points when writing the report. Add examples as they arise.
 - **Exceptions as boundary signals:** service throws domain exceptions; `@ResponseStatus` or a `catch` in the controller translates to HTTP. The exception travels; the transport mapping is pluggable (same exception could become `403 Forbidden` in a REST API).
 - **Transaction propagation (`REQUIRED`):** cross-service atomicity (`PostService` + `TagService`) without hand-rolled transaction management; the single declarative annotation replaces explicit begin/commit/rollback.
 - **Mass-assignment, defense in depth:** structural prevention at the service seam (primitive parameters, no entity-shaped input), binding-level fix in Phase 4 (form DTOs replace raw-entity `@ModelAttribute`).
+- **Jakarta Bean Validation:** declarative input rules on the DTO, enforced by `@Valid` + `BindingResult` in the controller. Custom constraints (annotation + `ConstraintValidator` pair) extend the framework for domain-specific needs (`@NotBlankHtml` for WYSIWYG shells).
+- **Post-Redirect-Get:** standard idiom for form submissions. Flash the form and binding result across the redirect; the GET re-renders with user input + inline errors; a page refresh after that doesn't resubmit.
