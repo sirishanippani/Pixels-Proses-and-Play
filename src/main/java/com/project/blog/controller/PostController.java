@@ -4,8 +4,8 @@ import com.project.blog.exception.PostOwnershipException;
 import com.project.blog.model.Comment;
 import com.project.blog.model.Post;
 import com.project.blog.model.Tag;
-import com.project.blog.repository.CommentRepository;
 import com.project.blog.security.AppUserDetails;
+import com.project.blog.service.CommentService;
 import com.project.blog.service.PostService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -13,7 +13,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Controller
@@ -21,11 +20,11 @@ import java.util.stream.Collectors;
 public class PostController {
 
     private final PostService postService;
-    private final CommentRepository commentRepository;
+    private final CommentService commentService;
 
-    public PostController(PostService postService, CommentRepository commentRepository) {
+    public PostController(PostService postService, CommentService commentService) {
         this.postService = postService;
-        this.commentRepository = commentRepository;
+        this.commentService = commentService;
     }
 
     @GetMapping("/create")
@@ -69,9 +68,7 @@ public class PostController {
                            @AuthenticationPrincipal AppUserDetails userDetails) {
         Post post = postService.getPostForView(id);
         model.addAttribute("post", post);
-
-        List<Comment> comments = commentRepository.findByPost(post);
-        model.addAttribute("comments", comments);
+        model.addAttribute("comments", commentService.getCommentsForPost(post));
         model.addAttribute("newComment", new Comment());
 
         if (userDetails != null) {

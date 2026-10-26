@@ -1,12 +1,7 @@
 package com.project.blog.controller;
 
-import com.project.blog.model.Post;
-import com.project.blog.model.Role;
-import com.project.blog.model.User;
-import com.project.blog.repository.PostRepository;
-import com.project.blog.repository.UserRepository;
 import com.project.blog.security.AppUserDetails;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.project.blog.service.AdminService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -16,27 +11,22 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.List;
-
 @Controller
 public class AdminController {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final AdminService adminService;
 
-    @Autowired
-    private PostRepository postRepository;
+    public AdminController(AdminService adminService) {
+        this.adminService = adminService;
+    }
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/admin")
     public String adminDashboard(Model model, Authentication auth) {
         AppUserDetails userDetails = (AppUserDetails) auth.getPrincipal();
-        User user = userDetails.getUser();
-        List<User> users = userRepository.findAll();
-        List<Post> posts = postRepository.findAll();
-        model.addAttribute("admin", user.getUsername());
-        model.addAttribute("users", users);
-        model.addAttribute("posts", posts);
+        model.addAttribute("admin", userDetails.getUser().getUsername());
+        model.addAttribute("users", adminService.getAllUsers());
+        model.addAttribute("posts", adminService.getAllPosts());
         model.addAttribute("flashMessage", model.asMap().get("flashMessage"));
         return "admin_dashboard";
     }
@@ -44,42 +34,34 @@ public class AdminController {
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/admin/user/delete/{id}")
     public String deleteUser(@PathVariable Long id, RedirectAttributes redirectAttributes) {
-        userRepository.deleteById(id);
-        redirectAttributes.addFlashAttribute("flashMessage", "\uD83D\uDC80 One less drama queen in the cast.");
+        adminService.deleteUser(id);
+        redirectAttributes.addFlashAttribute("flashMessage", "💀 One less drama queen in the cast.");
         return "redirect:/admin";
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/admin/post/delete/{id}")
     public String deletePost(@PathVariable Long id, RedirectAttributes redirectAttributes) {
-        postRepository.deleteById(id);
-        redirectAttributes.addFlashAttribute("flashMessage", "\uD83D\uDD25 You just Thanos-snapped that post.");
+        adminService.deletePost(id);
+        redirectAttributes.addFlashAttribute("flashMessage", "🔥 You just Thanos-snapped that post.");
         return "redirect:/admin";
     }
 
-    @PostMapping("/admin/user/toggle-role/{id}")
     @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/admin/user/toggle-role/{id}")
     public String toggleUserRole(@PathVariable Long id, RedirectAttributes redirectAttributes, Authentication auth) {
-        userRepository.findById(id).ifPresent(user -> {
-            boolean isSelf = user.getEmail().equals(auth.getName());
-            if (user.getRole().equals("ROLE_USER")) {
-                user.setRole(Role.ROLE_ADMIN);
-            } else {
-                user.setRole(Role.ROLE_USER);
-            }
-            userRepository.save(user);
-            if (isSelf) {
-                redirectAttributes.addFlashAttribute("flashMessage", "👑 New role unlocked! Time to re-enter like royalty.");
-                // redirect to logout so user session is refreshed
-                redirectAttributes.addFlashAttribute("forceLogout", true);
-            }
-        });
-        redirectAttributes.addFlashAttribute("flashMessage", "\uD83D\uDD01 Someone just got a promotion... or demotion. Tea! ☕");
+        boolean affectedSelf = adminService.toggleUserRole(id, auth.getName());
+        if (affectedSelf) {
+            redirectAttributes.addFlashAttribute("flashMessage", "👑 New role unlocked! Time to re-enter like royalty.");
+            redirectAttributes.addFlashAttribute("forceLogout", true);
+        } else {
+            redirectAttributes.addFlashAttribute("flashMessage", "🔁 Someone just got a promotion... or demotion. Tea! ☕");
+        }
         return "redirect:/admin";
     }
 
     @GetMapping("/whoami")
-    public String whoami(org.springframework.security.core.Authentication auth) {
+    public String whoami(Authentication auth) {
         System.out.println("\n=== WHOAMI DEBUG ===");
         System.out.println("Logged-in user: " + auth.getName());
         auth.getAuthorities().forEach(role ->
