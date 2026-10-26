@@ -1,8 +1,8 @@
 package com.project.blog.controller;
 
+import com.project.blog.dto.CommentForm;
 import com.project.blog.dto.PostForm;
 import com.project.blog.exception.PostOwnershipException;
-import com.project.blog.model.Comment;
 import com.project.blog.model.Post;
 import com.project.blog.security.AppUserDetails;
 import com.project.blog.service.CommentService;
@@ -67,7 +67,12 @@ public class PostController {
         Post post = postService.getPostForView(id);
         model.addAttribute("post", post);
         model.addAttribute("comments", commentService.getCommentsForPost(post));
-        model.addAttribute("newComment", new Comment());
+
+        // Only seed an empty comment form if the comment controller didn't flash one back
+        // (it flashes commentForm + its BindingResult on validation failure).
+        if (!model.containsAttribute("commentForm")) {
+            model.addAttribute("commentForm", CommentForm.empty());
+        }
 
         if (userDetails != null) {
             model.addAttribute("currentUser", userDetails.getUser());

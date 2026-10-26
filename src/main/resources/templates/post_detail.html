@@ -205,11 +205,11 @@
 
         <!-- ➕ Add Comment -->
         <div th:if="${loggedInUser != null}" class="mt-6">
-            <form th:action="@{/post/{id}/comment(id=${post.id})}" method="post">
-        <textarea name="content" th:field="*{newComment.content}"
-                  placeholder="Spill your thoughts, dear mortal..."
-                  class="w-full p-2 rounded-lg border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring focus:border-pink-300 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white"
-                  required></textarea>
+            <form th:action="@{/post/{id}/comment(id=${post.id})}" th:object="${commentForm}" method="post" novalidate>
+                <textarea th:field="*{content}" th:errorclass="is-invalid"
+                          placeholder="Spill your thoughts, dear mortal..."
+                          class="w-full p-2 rounded-lg border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring focus:border-pink-300 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white"></textarea>
+                <div class="text-sm text-red-500 mt-1" th:if="${#fields.hasErrors('content')}" th:errors="*{content}"></div>
                 <button type="submit" class="mt-2 px-4 py-1 bg-pink-500 rounded hover:bg-pink-600">
                     🗯️ Drop the mic
                 </button>

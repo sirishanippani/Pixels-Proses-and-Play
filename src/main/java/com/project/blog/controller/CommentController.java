@@ -1,11 +1,13 @@
 package com.project.blog.controller;
 
+import com.project.blog.dto.CommentForm;
 import com.project.blog.exception.CommentOwnershipException;
-import com.project.blog.model.Comment;
 import com.project.blog.security.AppUserDetails;
 import com.project.blog.service.CommentService;
+import jakarta.validation.Valid;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,6 +15,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 public class CommentController {
+
+    private static final String COMMENT_FORM_ATTR = "commentForm";
+    private static final String COMMENT_FORM_BINDING_RESULT_ATTR =
+            "org.springframework.validation.BindingResult." + COMMENT_FORM_ATTR;
 
     private final CommentService commentService;
 
@@ -22,10 +28,16 @@ public class CommentController {
 
     @PostMapping("/post/{postId}/comment")
     public String addComment(@PathVariable Long postId,
-                             @ModelAttribute("newComment") Comment newComment,
+                             @Valid @ModelAttribute("commentForm") CommentForm form,
+                             BindingResult bindingResult,
                              @AuthenticationPrincipal AppUserDetails loggedInUser,
                              RedirectAttributes redirectAttributes) {
-        commentService.createComment(postId, loggedInUser.getUser(), newComment.getContent());
+        if (bindingResult.hasErrors()) {
+            redirectAttributes.addFlashAttribute(COMMENT_FORM_BINDING_RESULT_ATTR, bindingResult);
+            redirectAttributes.addFlashAttribute(COMMENT_FORM_ATTR, form);
+            return "redirect:/post/" + postId;
+        }
+        commentService.createComment(postId, loggedInUser.getUser(), form.content());
         redirectAttributes.addFlashAttribute("flashMessage", "💬 Comment added!");
         return "redirect:/post/" + postId;
     }
