@@ -1,13 +1,16 @@
 package com.project.blog.controller;
 
+import com.project.blog.dto.ProfileForm;
 import com.project.blog.model.User;
 import com.project.blog.security.AppUserDetails;
 import com.project.blog.service.PostService;
 import com.project.blog.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -48,15 +51,22 @@ public class ProfileController {
     public String editProfileForm(@AuthenticationPrincipal AppUserDetails currentUser, Model model) {
         User user = userService.findByUsername(currentUser.getUsername())
                 .orElseThrow(() -> new IllegalStateException("Authenticated user missing from database: " + currentUser.getUsername()));
-        model.addAttribute("user", user);
+        model.addAttribute("profileForm", ProfileForm.from(user));
+        model.addAttribute("currentUsername", user.getUsername());
         return "edit_profile";
     }
 
     @PostMapping("/edit")
-    public String updateProfile(@ModelAttribute("user") User formUser,
+    public String updateProfile(@Valid @ModelAttribute("profileForm") ProfileForm form,
+                                BindingResult bindingResult,
                                 @AuthenticationPrincipal AppUserDetails currentUser,
-                                RedirectAttributes redirectAttributes) {
-        User updated = userService.updateProfile(currentUser.getUsername(), formUser.getUsername(), formUser.getBio());
+                                RedirectAttributes redirectAttributes,
+                                Model model) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("currentUsername", currentUser.getUsername());
+            return "edit_profile";
+        }
+        User updated = userService.updateProfile(currentUser.getUsername(), form.username(), form.bio());
         redirectAttributes.addFlashAttribute("success", "💅 Your glow-up is now official!");
         return "redirect:/profile/" + updated.getUsername();
     }

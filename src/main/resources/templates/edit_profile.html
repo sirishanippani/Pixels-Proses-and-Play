@@ -16,23 +16,26 @@
   <div class="p-4 rounded-4 border-0 glassy-profile pastel-border">
     <h2 class="mb-4 pastel-text fw-bold">🪄 Edit Your Sparkle</h2>
 
-    <form th:action="@{/profile/edit}" th:object="${user}" method="post">
+    <form th:action="@{/profile/edit}" th:object="${profileForm}" method="post" novalidate>
       <!-- ✏️ Name Field -->
       <div class="mb-3">
         <label class="form-label">Display Name</label>
-        <input type="text" th:field="*{username}" class="form-control pastel-input" required>
+        <input type="text" th:field="*{username}" class="form-control pastel-input" th:errorclass="is-invalid">
+        <div class="invalid-feedback" th:errors="*{username}"></div>
       </div>
 
       <!-- 📝 Bio Field -->
       <div class="mb-3">
         <label class="form-label">Bio</label>
         <textarea th:field="*{bio}" class="form-control pastel-input" rows="4"
+                  th:errorclass="is-invalid"
                   placeholder="Type your vibe here ✨"></textarea>
+        <div class="invalid-feedback" th:errors="*{bio}"></div>
       </div>
 
       <!-- 🎯 Buttons -->
       <div class="d-flex justify-content-between">
-        <a th:href="@{'/profile/' + ${user.username}}" class="btn btn-outline-secondary">
+        <a th:href="@{'/profile/' + ${currentUsername}}" class="btn btn-outline-secondary">
           ⬅️ Cancel
         </a>
         <button type="submit" class="btn btn-success shadow-sm">
