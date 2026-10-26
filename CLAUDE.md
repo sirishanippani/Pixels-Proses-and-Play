@@ -52,18 +52,8 @@
 - [x] **Phase 0** — Secrets purge *(skipped by user: creds were dummy, repo never leaked public)*
 - [x] **Phase 1** — Safety net: H2 local profile, `application.properties` default, 6 passing safety-net tests (`PostRepositoryTest`, `AuthControllerTest`, `SmokeTest`)
 - [x] **Phase 2** — Data-corruption bug: `PostSummaryDto` (record, 6 fields including `tagNames`), `PostSummaryMapper` (`@Component`, centralized HTML-strip + truncate + tag sort). `HomeController` and `DashboardController` migrated to constructor injection + DTO mapping. `DataCorruptionBugTest` added as regression guard. All 7 tests passing.
-- [ ] **Phase 3** — Service layer (**in progress**). Extract `PostService`, `UserService`, `CommentService`, `AdminService`. Strangler-fig migration — one controller slice per commit. Teaching focus: `@Transactional` boundaries, anemic domain vs transaction script, framework-type leakage (principal shape), exceptions as domain boundary signals.
-    - [x] `PostService` with reads (`getFeaturedPosts`, `getRecentPosts`, `getPostsByUser`, `searchByTitle`, `getPostForView`, `getPostForEdit`) and writes (`createPost`, `updatePost`, `deletePost`). Class-level `@Transactional(readOnly = true)`; writes override.
-    - [x] `TagService` extracted for CSV tag parsing (`resolveOrCreate`). Joins the enclosing `PostService` transaction via default REQUIRED propagation.
-    - [x] `HomeController`, `DashboardController`, `ProfileController`, `SearchController`, `PostController` migrated to constructor injection + `PostService`.
-    - [x] New `com.project.blog.exception` package. `PostOwnershipException` — service throws, controller catches, redirects to `/dashboard`. `PostNotFoundException` — annotated `@ResponseStatus(NOT_FOUND)`, Spring renders the custom 404 template instead of a 500.
-    - [x] `PostSearchResultDto` converted to a `record` + `PostSearchResultMapper` added.
-    - [x] Template fix (pre-existing, surfaced in manual QA): `edit_post.html` hidden `#content` input now pre-fills via `th:value="${post.content}"` so Toast Editor loads with existing content.
-    - [ ] `CommentService` + migrate `CommentController`, including the stray `CommentRepository` field injection still in `PostController`.
-    - [ ] `AdminService` + migrate `AdminController`.
-    - [ ] `UserService` + migrate `ProfileController`'s field-injected `UserRepository`.
-    - [ ] Real tests for write paths — `@WebMvcTest` for `PostController` happy path + ownership redirect; Mockito unit tests for `PostService` (`updatePost` preserves content, ownership exception, create happy path); template smoke that `edit_post` pre-fills content.
-- [ ] **Phase 4** — Form DTOs + Bean Validation. `RegisterRequest`, `PostForm`, `ProfileForm`, `CommentForm`. Closes mass-assignment vulnerability on `/register` (currently binds raw `User` entity, lets attacker set `role=ROLE_ADMIN`).
+- [x] **Phase 3** — Service layer. `PostService`, `TagService`, `CommentService`, `AdminService`, `UserService` extracted. Every controller on constructor injection; field injection count = 0. New `com.project.blog.exception` package: `PostOwnershipException`, `PostNotFoundException`, `CommentOwnershipException` (carries `postId`), `CommentNotFoundException`, `UserNotFoundException`. Not-found exceptions annotated `@ResponseStatus(NOT_FOUND)` for direct Spring HTTP mapping; ownership exceptions caught by controllers and translated to redirects. Password encoding moved from `AuthController` into `UserService.register`; service accepts primitives, structurally closing the `/register` mass-assignment hole ahead of Phase 4. Services accept primitive parameters throughout — entity never crosses the service seam on writes. Test suite established the project's three-pattern baseline (unit via Mockito, `@WebMvcTest`, `@DataJpaTest`). Pre-existing bug fixes landed opportunistically: `edit_post.html` content pre-fill, `/post/<deleted-id>` 500 → 404, upload directory auto-create.
+- [ ] **Phase 4** — Form DTOs + Bean Validation (**next**). `RegisterRequest`, `PostForm`, `ProfileForm`, `CommentForm`. Closes mass-assignment at the binding target (Phase 3 already closed it at the service seam — this is defense in depth). Teaching focus: `@Valid` + `BindingResult`, `jakarta.validation` constraints, field-level error rendering in Thymeleaf, DTO vs entity binding targets.
 - [ ] **Phase 5** — Portability. Replace `RAND()` native query with a portable approach. Add Flyway; set `ddl-auto=validate`. Fix N+1 on tags via `@EntityGraph`. Split `application-mysql.properties` and `application-postgres.properties`. Make the DB layer genuinely pluggable via Spring profiles.
 - [ ] **Phase 6** — Security + hygiene. Disable OSIV (`spring.jpa.open-in-view=false`). Delete `/whoami` debug endpoint and `test_logo.html`. Harden file upload (MIME whitelist, drop original filename). Remove `target/` from git tracking, fix `.gitignore`. Replace stack-trace prints with SLF4J.
 - [ ] **Phase 6.5** — UI/UX polish. Aesthetic target: *cozy but editorial* — Medium-grade typography, muted palette, generous whitespace, intentional small personality moments (random homepage greeting, post-creation copy, 404 page) rather than emoji-per-sentence density. Centralize hard-coded flash messages into `messages.properties` (i18n-ready; one line in Technologies Used for the report). Add loading states (Toast Editor, search, feed queries). Rewrite copy currently in controllers (`✨ Your thoughts are now out in the wild!`, `🧍‍♀️ Whoopsie!`, `👑 New role unlocked!`, etc.) to editorial-grade register with occasional warmth.
@@ -88,6 +78,12 @@
 - **Transaction propagation stays at Spring's default (`REQUIRED`).** `TagService.resolveOrCreate` joins `PostService.updatePost`'s write transaction, so tag inserts and post updates commit (or roll back) together. No hand-rolled transaction management.
 - **Exceptions in a dedicated package** (`com.project.blog.exception`) rather than alongside the service that throws them. Keeps the service file focused and gives us one import root for Phase 6's eventual `@ControllerAdvice`.
 - **UI aesthetic direction set early** (see Phase 6.5): *cozy but editorial*, Medium-adjacent typography and spacing, personality via copy restraint rather than emoji density. Captured now so we don't drift and so copy work isn't done twice (controller flash messages will move to `messages.properties` in the same phase).
+- **Testing pyramid in miniature** — the project standardizes on three test shapes. (1) Mockito unit tests (`@ExtendWith(MockitoExtension.class)` + `@Mock` + `@InjectMocks`) for service business logic — no Spring context, millisecond runtime, cover branches and exception paths. (2) `@WebMvcTest` + `@MockBean` for controller slices — loads MVC + Security + Jackson only, verifies HTTP translation and routing. (3) `@DataJpaTest` for repository slices — real Hibernate + H2, transactional rollback per test, essential for native queries and derived-query spellings. `@SpringBootTest` reserved for cross-cutting smoke and migration bugs; everything else uses the slice tests. The suite grows at the base of the pyramid, not the top.
+- **One mapper per DTO even when the mapping is one line.** Reaffirmed by `PostSearchResultMapper`. The mapper is the seam where projection strategy or caching can be swapped without touching the service or controller.
+- **Services may call other services for business lookups**, but talk to repositories directly for pure data access. `CommentService.createComment` delegates post lookup to `PostService.getPostForView` so the same `PostNotFoundException` → 404 behavior applies everywhere. Pure index-into-repo reads stay on the repo.
+- **Exceptions carry context the caller needs**, not just a message. `CommentOwnershipException` holds the parent `postId` so the controller can redirect back to the post without re-querying. Service decides what context to publish; controller consumes.
+- **Admin operations are their own service (`AdminService`), not spread across `UserService`.** Role-privileged ops (`deleteUser`, `toggleUserRole`, `getAllPosts`) and user-privileged ops (`register`, `updateProfile`) have different authorization models and lifecycles — mixing them hides that difference.
+- **`Optional` for "may be absent as a normal input domain outcome"; exception for "absent means caller's assumption was violated."** `UserService.findByUsername` returns `Optional` (URL path may name a nonexistent user). `UserService.updateProfile` throws `UserNotFoundException` (authenticated caller is expected to exist; miss means data corruption).
 
 ## Known Tech Debt (With Phase Owner)
 
@@ -101,25 +97,41 @@
 - **`test_logo.html`** debug template committed → Phase 6 (delete).
 - **`target/`** committed to git; `.gitignore` has malformed `target/` block → Phase 6.
 - **MySQL driver uses old `mysql-connector-java` coordinates** → Phase 5 (switch to `com.mysql:mysql-connector-j`, let BOM manage version).
-- **No real tests** beyond safety-net; need @DataJpaTest for `PostRepository.findRandomPosts`, service-layer unit tests with Mockito → Phase 3+.
 - **PostController silently redirects to `/dashboard`** on ownership failure for update/delete — users receive no feedback that their action was rejected → Phase 4 (form error state) or Phase 6.5 (flash message copy).
-- **`@ModelAttribute Post` form binding** on create/update still permits mass-assignment on fields the service happens to ignore. The service seam protects persistence; the binding target does not. → Phase 4 (`PostForm` record).
-- **`ProfileController` field-injects `UserRepository`** → Phase 3 (`UserService` slice).
-- **`PostController` field-injects `CommentRepository`** → Phase 3 (`CommentService` slice).
-- **No regression test for the `edit_post.html` content pre-fill fix** → Phase 3 (template smoke).
-- **No tests for the write paths** (`createPost`, `updatePost`, `deletePost`, ownership rejection, 404 for missing post) → Phase 3+.
+- **`@ModelAttribute Post`/`@ModelAttribute User` form binding** still permits mass-assignment on fields the service happens to ignore. The service seam protects persistence; the binding target does not. → Phase 4 (`PostForm`, `RegisterRequest`, `ProfileForm` records).
 - **Emoji-dense, hard-coded flash messages** in `PostController`, `ProfileController`, `CommentController`, `AdminController` — reads as AI-generated → Phase 6.5 (rewrite + `messages.properties`).
+- **`User.getRole()` returns `String`** (overriding Lombok's enum getter via `role.name()`). A field typed `Role` exposed as `String` is a trap for any caller who assumes the Lombok shape. → Phase 4 or 6 (needs audit of Spring Security use sites first).
+- **`admin/user/toggle-role/{id}` flash is misleading when user id does not exist** — currently says "Someone just got a promotion…" even on a no-op. → Phase 6.5 (copy pass).
+- **`AdminController.toggleUserRole` compares `Role` enum via `.name()` string equality** (`"ROLE_USER".equals(user.getRole())`) because of the `getRole()` String-shadowing above. Will fall out when the `User.getRole()` debt is fixed.
+- **Upload directory bug fixed inline** (`Files.createDirectories(path.getParent())`) but the whole upload path still has structural issues: no MIME whitelist, original filename preserved (path traversal / XSS vector), `e.printStackTrace()` instead of SLF4J, working-directory-relative path. → Phase 6 (dedicated `StorageService` + hardening).
+- **`ProfileController` still uses `@Value` for `uploadDir`** — belongs in a typed `@ConfigurationProperties` record. → Phase 6 hygiene.
+- **`editProfileForm` throws `IllegalStateException`** if authenticated user is missing from DB (data corruption); needs logging + friendly error page → Phase 6.
+- **`@MockBean` is deprecated** in Spring Boot 3.4+ (replacement: `@MockitoBean` from `org.springframework.test.context.bean.override.mockito`) → testing hygiene pass, Phase 6.
+- **No `@WebMvcTest` for `PostController`** — needs `@AuthenticationPrincipal AppUserDetails` handling (custom principal argument resolver or `.with(user(appUserDetails))`). → Phase 3+ follow-up.
+- **No service unit tests for `UserService`, `AdminService`, `CommentService`** — pattern established by `PostServiceTest`/`TagServiceTest`, follow-up slices can add them without new teaching. → Phase 3+ follow-up.
 
 ## Test Suite Status
 
-- Total: 7 passing
-- `BlogApplicationTests.contextLoads` (default)
-- `PostRepositoryTest.findByUser_returnsOnlyThatUsersPosts`
-- `PostRepositoryTest.findTop10ByOrderByCreatedAtDesc_returnsRecentFirst`
-- `AuthControllerTest.register_persistsUserWithEncodedPassword`
-- `SmokeTest.homePage_loadsForAnonymousUser`
-- `SmokeTest.loginPage_loadsForAnonymousUser`
-- `DataCorruptionBugTest.visitingHomePage_mustNotMutatePostContent`
+- Total: 15 passing
+- Full-context (`@SpringBootTest`):
+    - `BlogApplicationTests.contextLoads`
+    - `AuthControllerTest.register_persistsUserWithEncodedPassword`
+    - `SmokeTest.homePage_loadsForAnonymousUser`
+    - `SmokeTest.loginPage_loadsForAnonymousUser`
+    - `DataCorruptionBugTest.visitingHomePage_mustNotMutatePostContent`
+- Web slice (`@WebMvcTest`):
+    - `SearchControllerTest.searchPosts_returnsJsonArrayFromService`
+- Data slice (`@DataJpaTest`):
+    - `PostRepositoryTest.findByUser_returnsOnlyThatUsersPosts`
+    - `PostRepositoryTest.findTop10ByOrderByCreatedAtDesc_returnsRecentFirst`
+    - `PostRepositoryTest.findRandomPosts_returnsAtMostThreePosts`
+- Service unit (Mockito, no Spring context):
+    - `PostServiceTest.createPost_persistsPostWithAuthorTitleContentAndTags`
+    - `PostServiceTest.updatePost_overwritesTitleContentAndTagsWhenOwner`
+    - `PostServiceTest.updatePost_throwsPostOwnershipExceptionWhenRequesterIsNotOwner`
+    - `PostServiceTest.getPostForView_throwsPostNotFoundExceptionWhenMissing`
+    - `TagServiceTest.resolveOrCreate_returnsEmptySetForBlankOrNullInput`
+    - `TagServiceTest.resolveOrCreate_reusesExistingTagsLowercasesAndCreatesMissingOnes`
 
 ## Commit Discipline
 
