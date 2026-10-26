@@ -73,6 +73,7 @@ public class ProfileController {
 
             String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
             Path path = Paths.get(uploadDir, filename);
+            Files.createDirectories(path.getParent());
             Files.copy(file.getInputStream(), path);
 
             userService.setProfileImage(userDetails.getUser().getId(), filename);
