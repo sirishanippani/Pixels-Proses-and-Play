@@ -52,6 +52,20 @@ class PostRepositoryTest {
         assertThat(recent).hasSize(10);
     }
 
+    @Test
+    void findRandomPosts_returnsAtMostThreePosts() {
+        User u = newUser("rand", "rand@example.com");
+        userRepository.save(u);
+        for (int i = 0; i < 5; i++) {
+            postRepository.save(newPost("Random " + i, u));
+        }
+
+        List<Post> random = postRepository.findRandomPosts();
+
+        assertThat(random).hasSizeLessThanOrEqualTo(3);
+        assertThat(random).extracting(Post::getTitle).allMatch(t -> t.startsWith("Random "));
+    }
+
     private User newUser(String username, String email) {
         User u = new User();
         u.setUsername(username);
