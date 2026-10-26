@@ -1,19 +1,19 @@
 package com.project.blog.controller;
 
+import com.project.blog.dto.PostForm;
 import com.project.blog.exception.PostOwnershipException;
 import com.project.blog.model.Comment;
 import com.project.blog.model.Post;
-import com.project.blog.model.Tag;
 import com.project.blog.security.AppUserDetails;
 import com.project.blog.service.CommentService;
 import com.project.blog.service.PostService;
+import jakarta.validation.Valid;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/post")
@@ -29,16 +29,19 @@ public class PostController {
 
     @GetMapping("/create")
     public String createPostForm(Model model) {
-        model.addAttribute("post", new Post());
+        model.addAttribute("postForm", PostForm.empty());
         return "create_post";
     }
 
     @PostMapping("/create")
-    public String savePost(@ModelAttribute("post") Post post,
-                           @RequestParam("tagInput") String tagInput,
+    public String savePost(@Valid @ModelAttribute("postForm") PostForm form,
+                           BindingResult bindingResult,
                            @AuthenticationPrincipal AppUserDetails userDetails,
                            RedirectAttributes redirectAttributes) {
-        postService.createPost(userDetails.getUser(), post.getTitle(), post.getContent(), tagInput);
+        if (bindingResult.hasErrors()) {
+            return "create_post";
+        }
+        postService.createPost(userDetails.getUser(), form.title(), form.content(), form.tagInput());
         redirectAttributes.addFlashAttribute("flashMessage", "✨ Your thoughts are now out in the wild!");
         return "redirect:/dashboard";
     }
@@ -53,13 +56,8 @@ public class PostController {
         } catch (PostOwnershipException e) {
             return "redirect:/dashboard";
         }
-        model.addAttribute("post", post);
-
-        String tagString = post.getTags().stream()
-                .map(Tag::getName)
-                .collect(Collectors.joining(", "));
-        model.addAttribute("postTagString", tagString);
-
+        model.addAttribute("postForm", PostForm.from(post));
+        model.addAttribute("postId", id);
         return "edit_post";
     }
 
@@ -81,12 +79,17 @@ public class PostController {
 
     @PostMapping("/edit/{id}")
     public String updatePost(@PathVariable Long id,
-                             @ModelAttribute Post updatedPost,
-                             @RequestParam("tagInput") String tagInput,
-                             @AuthenticationPrincipal AppUserDetails userDetails) {
+                             @Valid @ModelAttribute("postForm") PostForm form,
+                             BindingResult bindingResult,
+                             @AuthenticationPrincipal AppUserDetails userDetails,
+                             Model model) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("postId", id);
+            return "edit_post";
+        }
         try {
             postService.updatePost(id, userDetails.getUser(),
-                    updatedPost.getTitle(), updatedPost.getContent(), tagInput);
+                    form.title(), form.content(), form.tagInput());
         } catch (PostOwnershipException e) {
             return "redirect:/dashboard";
         }

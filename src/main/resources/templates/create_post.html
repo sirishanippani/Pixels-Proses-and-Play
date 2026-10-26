@@ -16,26 +16,29 @@
 <div th:replace="fragments/navbar :: navbar"></div>
 <div class="container mt-5">
     <h2>Create Post</h2>
-    <form id="postForm" th:action="@{/post/create}" th:object="${post}" method="post">
+    <form id="postForm" th:action="@{/post/create}" th:object="${postForm}" method="post" novalidate>
 
         <!--Title-->
         <div class="mb-3">
             <label>Title</label>
-            <input type="text" th:field="*{title}" class="form-control" required/>
+            <input type="text" th:field="*{title}" class="form-control" th:errorclass="is-invalid"/>
+            <div class="invalid-feedback" th:errors="*{title}"></div>
         </div>
 
         <label for="tagInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mt-3">Tags (comma-separated)</label>
-        <input type="text" name="tagInput" id="tagInput"
+        <input type="text" th:field="*{tagInput}" id="tagInput"
                placeholder="e.g. tech, productivity, pastel vibes"
                class="w-full p-2 mt-1 rounded border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
-               th:value="${postTagString != null ? postTagString : ''}">
+               th:errorclass="is-invalid">
+        <div class="invalid-feedback" th:errors="*{tagInput}"></div>
 
         <!--Content-->
         <div class="mb-3">
             <label>Content</label>
             <div id="toast-editor"></div>
-            <!-- Hidden input to capture HTML content -->
-            <input type="hidden" name="content" id="content"/>
+            <!-- Hidden input to capture HTML content; pre-fills with submitted value on validation error -->
+            <input type="hidden" th:field="*{content}" id="content"/>
+            <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('content')}" th:errors="*{content}"></div>
         </div>
 
         <button type="submit" class="btn btn-success">Publish</button>
