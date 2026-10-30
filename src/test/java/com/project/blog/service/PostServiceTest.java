@@ -1,6 +1,7 @@
 package com.project.blog.service;
 
 import com.project.blog.dto.PostSearchResultMapper;
+import com.project.blog.dto.PostSummaryDto;
 import com.project.blog.dto.PostSummaryMapper;
 import com.project.blog.exception.PostNotFoundException;
 import com.project.blog.exception.PostOwnershipException;
@@ -15,12 +16,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyIterable;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -101,5 +105,59 @@ class PostServiceTest {
 
         assertThatThrownBy(() -> postService.getPostForView(99L))
                 .isInstanceOf(PostNotFoundException.class);
+    }
+
+    @Test
+    void getFeaturedPosts_returnsAtMostThree() {
+        when(postRepository.findAllIds())
+                .thenReturn(new ArrayList<>(List.of(1L, 2L, 3L, 4L, 5L)));
+        when(postRepository.findAllById(anyIterable())).thenAnswer(inv -> {
+            Iterable<Long> ids = inv.getArgument(0);
+            List<Post> result = new ArrayList<>();
+            ids.forEach(id -> {
+                Post p = new Post();
+                p.setId(id);
+                result.add(p);
+            });
+            return result;
+        });
+        PostSummaryDto placeholder = new PostSummaryDto(1L, "t", "s", "u", null, List.of());
+        when(summaryMapper.toDto(any(Post.class))).thenReturn(placeholder);
+
+        List<PostSummaryDto> featured = postService.getFeaturedPosts();
+
+        assertThat(featured).hasSize(3);
+    }
+
+    @Test
+    void getFeaturedPosts_returnsAllWhenFewerThanThreePostsExist() {
+        when(postRepository.findAllIds())
+                .thenReturn(new ArrayList<>(List.of(1L, 2L)));
+        when(postRepository.findAllById(anyIterable())).thenAnswer(inv -> {
+            Iterable<Long> ids = inv.getArgument(0);
+            List<Post> result = new ArrayList<>();
+            ids.forEach(id -> {
+                Post p = new Post();
+                p.setId(id);
+                result.add(p);
+            });
+            return result;
+        });
+        PostSummaryDto placeholder = new PostSummaryDto(1L, "t", "s", "u", null, List.of());
+        when(summaryMapper.toDto(any(Post.class))).thenReturn(placeholder);
+
+        List<PostSummaryDto> featured = postService.getFeaturedPosts();
+
+        assertThat(featured).hasSize(2);
+    }
+
+    @Test
+    void getFeaturedPosts_returnsEmptyWhenNoPostsExist() {
+        when(postRepository.findAllIds()).thenReturn(new ArrayList<>());
+        when(postRepository.findAllById(anyIterable())).thenReturn(List.of());
+
+        List<PostSummaryDto> featured = postService.getFeaturedPosts();
+
+        assertThat(featured).isEmpty();
     }
 }

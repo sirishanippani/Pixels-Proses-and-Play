@@ -18,7 +18,10 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     @EntityGraph(attributePaths = {"user", "tags"})
     List<Post> findTop10ByOrderByCreatedAtDesc();
 
-    @Query(value = "SELECT * FROM posts ORDER BY RAND() LIMIT 3", nativeQuery = true)
-    List<Post> findRandomPosts();
+    @Query("SELECT p.id FROM Post p")
+    List<Long> findAllIds();
 
+    @Override
+    @EntityGraph(attributePaths = {"user", "tags"})
+    List<Post> findAllById(Iterable<Long> ids);
 }

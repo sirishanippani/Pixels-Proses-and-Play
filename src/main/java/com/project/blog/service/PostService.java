@@ -12,6 +12,8 @@ import com.project.blog.repository.PostRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -33,8 +35,13 @@ public class PostService {
         this.tagService = tagService;
     }
 
+    private static final int FEATURED_POST_COUNT = 3;
+
     public List<PostSummaryDto> getFeaturedPosts() {
-        return postRepository.findRandomPosts().stream()
+        List<Long> allIds = new ArrayList<>(postRepository.findAllIds());
+        Collections.shuffle(allIds);
+        List<Long> picked = allIds.stream().limit(FEATURED_POST_COUNT).toList();
+        return postRepository.findAllById(picked).stream()
                 .map(summaryMapper::toDto)
                 .toList();
     }

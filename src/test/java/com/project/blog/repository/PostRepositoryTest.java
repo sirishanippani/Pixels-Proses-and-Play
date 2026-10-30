@@ -53,17 +53,31 @@ class PostRepositoryTest {
     }
 
     @Test
-    void findRandomPosts_returnsAtMostThreePosts() {
-        User u = newUser("rand", "rand@example.com");
+    void findAllIds_returnsEveryPostId() {
+        User u = newUser("ids", "ids@example.com");
         userRepository.save(u);
         for (int i = 0; i < 5; i++) {
-            postRepository.save(newPost("Random " + i, u));
+            postRepository.save(newPost("Post " + i, u));
         }
 
-        List<Post> random = postRepository.findRandomPosts();
+        List<Long> ids = postRepository.findAllIds();
 
-        assertThat(random).hasSizeLessThanOrEqualTo(3);
-        assertThat(random).extracting(Post::getTitle).allMatch(t -> t.startsWith("Random "));
+        assertThat(ids).hasSize(5);
+        assertThat(ids).allMatch(id -> id != null && id > 0);
+    }
+
+    @Test
+    void findAllById_returnsOnlyRequestedPosts() {
+        User u = newUser("ins", "ins@example.com");
+        userRepository.save(u);
+        Post p1 = postRepository.save(newPost("one", u));
+        postRepository.save(newPost("two", u));
+        Post p3 = postRepository.save(newPost("three", u));
+
+        List<Post> picked = postRepository.findAllById(List.of(p1.getId(), p3.getId()));
+
+        assertThat(picked).extracting(Post::getTitle)
+                .containsExactlyInAnyOrder("one", "three");
     }
 
     private User newUser(String username, String email) {

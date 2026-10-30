@@ -14,8 +14,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -49,12 +47,6 @@ class DataCorruptionBugTest {
         Long postId = p.getId();
 
         // Act: visit the home page (triggers HomeController)
-
-        List<Post> random = postRepository.findRandomPosts();
-        System.out.println("findRandomPosts returned: " + random.size() + " posts");
-        List<Post> top10 = postRepository.findTop10ByOrderByCreatedAtDesc();
-        System.out.println("findTop10 returned: " + top10.size() + " posts");
-
         MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context)
                 .apply(springSecurity()).build();
         mockMvc.perform(get("/")).andExpect(status().isOk());
