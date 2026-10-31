@@ -59,15 +59,4 @@ public class AdminController {
         }
         return "redirect:/admin";
     }
-
-    @GetMapping("/whoami")
-    public String whoami(Authentication auth) {
-        System.out.println("\n=== WHOAMI DEBUG ===");
-        System.out.println("Logged-in user: " + auth.getName());
-        auth.getAuthorities().forEach(role ->
-                System.out.println("Authority: " + role.getAuthority())
-        );
-        System.out.println("====================\n");
-        return "redirect:/";
-    }
 }
