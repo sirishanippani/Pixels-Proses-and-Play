@@ -6,6 +6,8 @@ import com.project.blog.security.AppUserDetails;
 import com.project.blog.service.PostService;
 import com.project.blog.service.UserService;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -24,6 +26,8 @@ import java.util.UUID;
 @Controller
 @RequestMapping("/profile")
 public class ProfileController {
+
+    private static final Logger log = LoggerFactory.getLogger(ProfileController.class);
 
     private final UserService userService;
     private final PostService postService;
@@ -91,7 +95,7 @@ public class ProfileController {
             redirectAttributes.addFlashAttribute("flashMessage", "🪞 New look, who dis?");
             return "redirect:/profile/" + userDetails.getUsername();
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("Profile image upload failed for user {}", userDetails.getUsername(), e);
             redirectAttributes.addFlashAttribute("flashMessage", "🚫 Oops, that file wasn’t giving what it needed to give.");
             return "redirect:/profile/" + userDetails.getUsername();
         }
