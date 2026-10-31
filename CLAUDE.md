@@ -32,9 +32,11 @@
 - `src/main/java/com/project/blog/` — code
     - `BlogApplication.java`, `config/`, `controller/`, `dto/`, `model/`, `repository/`, `security/`, `service/`
 - `src/main/resources/`
-    - `application.properties` (default; sets `spring.profiles.active=local`)
+    - `application.properties` (profile-agnostic defaults; sets `spring.profiles.active=local`, `spring.flyway.locations=classpath:db/migration/{vendor}`)
     - `application-local.properties` (H2 in-memory, MySQL mode)
-    - `application-prod.properties` (MySQL via Cloud SQL socket factory — needs rework in Phase 5)
+    - `application-mysql.properties` (MySQL 8+; env-var driven URL/username/password)
+    - `application-postgres.properties` (Postgres; env-var driven; Phase 7 deployment target with Neon)
+    - `db/migration/{h2,mysql,postgresql}/V1__init.sql` — per-vendor baseline schema, selected at startup by Flyway's `{vendor}` placeholder
     - `templates/` (Thymeleaf), `static/`
 - `src/test/java/com/project/blog/` — tests
 
@@ -54,8 +56,8 @@
 - [x] **Phase 2** — Data-corruption bug: `PostSummaryDto` (record, 6 fields including `tagNames`), `PostSummaryMapper` (`@Component`, centralized HTML-strip + truncate + tag sort). `HomeController` and `DashboardController` migrated to constructor injection + DTO mapping. `DataCorruptionBugTest` added as regression guard. All 7 tests passing.
 - [x] **Phase 3** — Service layer. `PostService`, `TagService`, `CommentService`, `AdminService`, `UserService` extracted. Every controller on constructor injection; field injection count = 0. New `com.project.blog.exception` package: `PostOwnershipException`, `PostNotFoundException`, `CommentOwnershipException` (carries `postId`), `CommentNotFoundException`, `UserNotFoundException`. Not-found exceptions annotated `@ResponseStatus(NOT_FOUND)` for direct Spring HTTP mapping; ownership exceptions caught by controllers and translated to redirects. Password encoding moved from `AuthController` into `UserService.register`; service accepts primitives, structurally closing the `/register` mass-assignment hole ahead of Phase 4. Services accept primitive parameters throughout — entity never crosses the service seam on writes. Test suite established the project's three-pattern baseline (unit via Mockito, `@WebMvcTest`, `@DataJpaTest`). Pre-existing bug fixes landed opportunistically: `edit_post.html` content pre-fill, `/post/<deleted-id>` 500 → 404, upload directory auto-create.
 - [x] **Phase 4** — Form DTOs + Bean Validation. `spring-boot-starter-validation` added. Four form records with `jakarta.validation` constraints: `RegisterRequest`, `PostForm`, `ProfileForm`, `CommentForm`. Every write endpoint (register, post create/edit, profile edit, comment) migrated to `@Valid @ModelAttribute <form>` + `BindingResult`; templates bind via `th:object="${...Form}"`, render per-field errors with `th:errors` / `th:errorclass`, and declare `novalidate` so the server is the authoritative validator. Custom `@NotBlankHtml` constraint (annotation + `ConstraintValidator`) in `com.project.blog.validation` for WYSIWYG-backed fields that `@NotBlank` lets through. Comment form uses the Post-Redirect-Get idiom with flashed form + binding result to survive the inline-on-post-detail round-trip. Mass-assignment is now structurally impossible across every form: the DTOs expose only the fields the audience is allowed to set.
-- [ ] **Phase 5** — Portability (**next**). Replace `RAND()` native query with a portable approach. Add Flyway; set `ddl-auto=validate`. Fix N+1 on tags via `@EntityGraph`. Split `application-mysql.properties` and `application-postgres.properties`. Make the DB layer genuinely pluggable via Spring profiles.
-- [ ] **Phase 6** — Security + hygiene. Disable OSIV (`spring.jpa.open-in-view=false`). Delete `/whoami` debug endpoint and `test_logo.html`. Harden file upload (MIME whitelist, drop original filename). Remove `target/` from git tracking, fix `.gitignore`. Replace stack-trace prints with SLF4J.
+- [x] **Phase 5** — Portability. Flyway owns schema (`ddl-auto=validate`); schema is versioned SQL under `db/migration/`. N+1 on tag loading collapsed via `@EntityGraph(attributePaths = {"user", "tags"})` on `findByUser`, `findTop10ByOrderByCreatedAtDesc`, and the overridden `findAllById`. The native MySQL-only `findRandomPosts()` is gone — replaced by `findAllIds()` + `Collections.shuffle` + `findAllById(picked)` in `PostService.getFeaturedPosts`, portable across H2 / MySQL / Postgres. DB layer pluggable by profile: `application-{local,mysql,postgres}.properties` each own only their vendor-specific lines; `application.properties` keeps only DB-agnostic defaults (ddl-auto, flyway.locations, multipart). Flyway's `{vendor}` placeholder resolves to `db/migration/{h2,mysql,postgresql}` at startup — three parallel `V1__init.sql` files, each in its vendor's native syntax (ENUM vs VARCHAR+CHECK for `users.role`; CLOB / LONGTEXT / TEXT for `comments.content`; identity-column syntax). `Comment` entity now `@Table(name = "comments")` so the table name clears Postgres's reserved-word list and matches the plural convention. Dependencies modernized: `mysql:mysql-connector-java` 8.0.33 → `com.mysql:mysql-connector-j` (BOM-managed); GCP Cloud SQL socket factory + `application-prod.properties` deleted; Postgres driver + `flyway-database-postgresql` added.
+- [ ] **Phase 6** — Security + hygiene (**next**). Disable OSIV (`spring.jpa.open-in-view=false`). Delete `/whoami` debug endpoint and `test_logo.html`. Harden file upload (MIME whitelist, drop original filename). Remove `target/` from git tracking, fix `.gitignore`. Replace stack-trace prints with SLF4J.
 - [ ] **Phase 6.5** — UI/UX polish. Aesthetic target: *cozy but editorial* — Medium-grade typography, muted palette, generous whitespace, intentional small personality moments (random homepage greeting, post-creation copy, 404 page) rather than emoji-per-sentence density. Centralize hard-coded flash messages into `messages.properties` (i18n-ready; one line in Technologies Used for the report). Add loading states (Toast Editor, search, feed queries). Rewrite copy currently in controllers (`✨ Your thoughts are now out in the wild!`, `🧍‍♀️ Whoopsie!`, `👑 New role unlocked!`, etc.) to editorial-grade register with occasional warmth.
 - [ ] **Phase 7** — Deployment. Recommended stack: Render (free web service) + Neon (free Postgres). Dockerfile with `-XX:MaxRAMPercentage=75.0`, env-var secrets, `/health` endpoint, UptimeRobot keep-alive every 14 minutes.
 - [ ] **Report** — 40+ pages against Scaler Neovarsity Backend Specialization template. Sections: Abstract, Project Description, Requirement Gathering, Class Diagrams, DB Schema Design, Feature Development Process, Deployment Flow, Technologies Used, Conclusion, References. Report writing happens in parallel with Phase 5 onward.
@@ -89,19 +91,23 @@
 - **Path identifiers and session identity never belong on a form DTO.** `postId` for post edit comes from `@PathVariable`; `currentUsername` for profile edit comes from `@AuthenticationPrincipal`. Putting them on the form would let an attacker POST a different value than the URL/session says — the DTO carries data the user is changing, nothing else.
 - **Post-Redirect-Get for form submissions**, especially when the error-render path shares a template with another controller's GET. `RedirectAttributes.addFlashAttribute(...)` with the magic key `"org.springframework.validation.BindingResult.<attr>"` preserves validation errors across the redirect. The GET handler guards its form seeding with `model.containsAttribute(...)` so the flashed state isn't overwritten by the empty-form seed. Avoids re-POST on refresh and keeps template-population logic in one place.
 - **`novalidate` on `<form>` tags** so the server is the single source of truth for validation. HTML5 `required` is UX, not security — any HTTP client bypasses it. Validation rules may be added back selectively as a Phase 6.5 UX polish, but the server-side rules remain authoritative.
+- **Schema is versioned SQL, not inferred bytecode.** `ddl-auto=update` is never acceptable past the earliest prototype. Flyway owns schema — one `V__description.sql` per change, filename-based ordering, checksum-protected, applied idempotently via a `flyway_schema_history` table. `ddl-auto=validate` is Hibernate's complement: entity ↔ schema mismatch becomes a loud startup failure instead of silent `ALTER TABLE`.
+- **Vendor-specific SQL goes in vendor-specific migration dirs.** Flyway's `{vendor}` placeholder (`spring.flyway.locations=classpath:db/migration/{vendor}`) resolves to the detected DB type at startup; each dir is a complete, standalone history. Three parallel `V1__init.sql` files (H2, MySQL, Postgres) accept slight duplication in exchange for unambiguous per-vendor review.
+- **When SQL varies by dialect, push the varying part out of SQL and into Java.** `findRandomPosts()`'s dialect-locked `ORDER BY RAND()` became a two-query Java shuffle: `findAllIds()` (standard JPQL) → `Collections.shuffle` → `findAllById(picked)` (also standard). The non-portable step (randomness) now lives where portability isn't even a question.
+- **Spring profiles for the DB layer: `application.properties` holds DB-agnostic defaults; profile files hold *only* their vendor's lines.** Keep datasource / dialect out of the base file — a `${DATABASE_URL:jdbc:h2:...}` fallback silently defaults to H2 when a prod env var is misspelled. Forcing each environment to declare its own datasource is the production-safe shape.
+- **Let the Spring Boot BOM manage dependency versions wherever it can.** Explicit `<version>` on managed artifacts is a code smell: security patches arrive with Spring Boot upgrades otherwise, and pinned versions silently rot. Phase 5 flipped `mysql:mysql-connector-java 8.0.33` to `com.mysql:mysql-connector-j` (BOM-managed) as the demonstration case.
+- **Table rename beats quote-everywhere for reserved-word collisions.** `comment` was reserved in Postgres; renaming the table to `comments` via one `@Table(name = "comments")` annotation on the entity costs one line and brings the plural-table convention into consistency with `posts`/`users`. Quoting at every SQL site is noisier and easier to forget.
+- **Override `JpaRepository` methods to attach `@EntityGraph`.** `findAllById(Iterable<Long>)` is inherited; redeclaring it in the subinterface with `@EntityGraph(attributePaths = {"user", "tags"})` modifies the fetch plan without touching the implementation. Idiomatic Spring Data move whenever a specific call site needs eager-fetching the general default doesn't want.
 
 ## Known Tech Debt (With Phase Owner)
 
-- **N+1 queries** on tag loading in home/dashboard list views → Phase 5 (`@EntityGraph`).
-- **`findRandomPosts()` native query uses MySQL `RAND()`** → Phase 5 (replace with portable approach).
 - **OSIV still enabled** (Spring Boot default) → Phase 6 (`spring.jpa.open-in-view=false`).
-- **`application-prod.properties` tied to GCP Cloud SQL socket factory** → Phase 5/7 (rework for Render + Neon).
-- **No Flyway migrations** → Phase 5.
-- **Mass-assignment risk** on `/register` (entity binding) → Phase 4.
 - **Debug endpoint `/whoami`** in `AdminController` → Phase 6 (delete).
 - **`test_logo.html`** debug template committed → Phase 6 (delete).
 - **`target/`** committed to git; `.gitignore` has malformed `target/` block → Phase 6.
-- **MySQL driver uses old `mysql-connector-java` coordinates** → Phase 5 (switch to `com.mysql:mysql-connector-j`, let BOM manage version).
+- **No live Postgres smoke** — H2 tests pass, Postgres `V1__init.sql` written to spec, but nothing verifies it against a real Postgres before Phase 7's first deploy. Testcontainers slice (per-test Postgres via Docker) could pre-empt dialect issues in CI. → Phase 5+ follow-up or Phase 7 pre-flight.
+- **MySQL `V1__init.sql` uses `TIMESTAMP(6)`** which strict-mode MySQL deployments can reject (`NO_ZERO_DATE` + implicit default collision). Works on default MySQL 8; if the MySQL profile is reactivated for a real deployment, verify or switch to `DATETIME(6)`.
+- **Flyway 10.20 warns on H2 2.3** at startup ("latest supported H2 is 2.2.224"). Noise only; functionally fine. Resolve when Spring Boot's BOM moves Flyway forward.
 - **PostController silently redirects to `/dashboard`** on ownership failure for update/delete — users receive no feedback that their action was rejected → Phase 4 (form error state) or Phase 6.5 (flash message copy).
 - **User-submitted HTML content is rendered without a sanitizer** on the post detail page (via `th:utext` or similar). `@NotBlankHtml` validates presence but does not sanitize — a crafted `<script>` in post content would execute. Needs OWASP Java HTML Sanitizer or similar allowlist before any public hosting. → Phase 6 security hygiene (same slice as `StorageService` for uploads).
 - **Client-side `required` was removed from forms** when migrating to `novalidate`; browsers no longer prompt on empty fields. Server-side validation catches it, but the UX hop (full form POST → re-render) is heavier than a native prompt. Can re-add `required` on fields that are also `@NotBlank` as a Phase 6.5 polish, keeping server as source of truth.
@@ -118,7 +124,7 @@
 
 ## Test Suite Status
 
-- Total: 20 passing
+- Total: 24 passing
 - Full-context (`@SpringBootTest`):
     - `BlogApplicationTests.contextLoads`
     - `AuthControllerTest.register_persistsUserWithEncodedPassword`
@@ -130,12 +136,16 @@
 - Data slice (`@DataJpaTest`):
     - `PostRepositoryTest.findByUser_returnsOnlyThatUsersPosts`
     - `PostRepositoryTest.findTop10ByOrderByCreatedAtDesc_returnsRecentFirst`
-    - `PostRepositoryTest.findRandomPosts_returnsAtMostThreePosts`
+    - `PostRepositoryTest.findAllIds_returnsEveryPostId`
+    - `PostRepositoryTest.findAllById_returnsOnlyRequestedPosts`
 - Service unit (Mockito, no Spring context):
     - `PostServiceTest.createPost_persistsPostWithAuthorTitleContentAndTags`
     - `PostServiceTest.updatePost_overwritesTitleContentAndTagsWhenOwner`
     - `PostServiceTest.updatePost_throwsPostOwnershipExceptionWhenRequesterIsNotOwner`
     - `PostServiceTest.getPostForView_throwsPostNotFoundExceptionWhenMissing`
+    - `PostServiceTest.getFeaturedPosts_returnsAtMostThree`
+    - `PostServiceTest.getFeaturedPosts_returnsAllWhenFewerThanThreePostsExist`
+    - `PostServiceTest.getFeaturedPosts_returnsEmptyWhenNoPostsExist`
     - `TagServiceTest.resolveOrCreate_returnsEmptySetForBlankOrNullInput`
     - `TagServiceTest.resolveOrCreate_reusesExistingTagsLowercasesAndCreatesMissingOnes`
 - Validator unit (plain JUnit, no framework):
@@ -190,3 +200,6 @@ Use these as talking points when writing the report. Add examples as they arise.
 - **Mass-assignment, defense in depth:** structural prevention at the service seam (primitive parameters, no entity-shaped input), binding-level fix in Phase 4 (form DTOs replace raw-entity `@ModelAttribute`).
 - **Jakarta Bean Validation:** declarative input rules on the DTO, enforced by `@Valid` + `BindingResult` in the controller. Custom constraints (annotation + `ConstraintValidator` pair) extend the framework for domain-specific needs (`@NotBlankHtml` for WYSIWYG shells).
 - **Post-Redirect-Get:** standard idiom for form submissions. Flash the form and binding result across the redirect; the GET re-renders with user input + inline errors; a page refresh after that doesn't resubmit.
+- **Schema as code via Flyway:** versioned SQL migrations under `db/migration/`, checksum-protected, idempotent. Replaces Hibernate's inferred schema generation. `ddl-auto=validate` provides the entity ↔ schema matching check.
+- **Portability through vendor-specific migrations:** the same logical schema in three physical representations via Flyway's `{vendor}` placeholder. Illustrates how dialect divergence is handled without forking the application code.
+- **N+1 fix with `@EntityGraph`:** per-call-site declaration of which associations to fetch; keeps entity defaults LAZY while giving list queries a constant-query-count fetch plan.
