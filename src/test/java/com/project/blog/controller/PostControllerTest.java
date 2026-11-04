@@ -1,6 +1,7 @@
 package com.project.blog.controller;
 
 import com.project.blog.exception.PostOwnershipException;
+import com.project.blog.flash.FlashService;
 import com.project.blog.model.Role;
 import com.project.blog.model.User;
 import com.project.blog.security.AppUserDetails;
@@ -32,6 +33,7 @@ class PostControllerTest {
     @Autowired private MockMvc mockMvc;
     @MockitoBean private PostService postService;
     @MockitoBean private CommentService commentService;
+    @MockitoBean private FlashService flash;
 
     private AppUserDetails alice;
 

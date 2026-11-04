@@ -33,12 +33,12 @@ public class StorageService {
 
     public String store(MultipartFile file) {
         if (file == null || file.isEmpty()) {
-            throw new StorageException("No file was provided.");
+            throw new StorageException("profile.image.empty", "No file was provided.");
         }
         String contentType = file.getContentType();
         String extension = EXTENSION_BY_CONTENT_TYPE.get(contentType);
         if (extension == null) {
-            throw new StorageException("Unsupported file type: " + contentType);
+            throw new StorageException("profile.image.unsupported", "Unsupported file type: " + contentType);
         }
 
         String storedName = UUID.randomUUID() + "." + extension;
@@ -48,7 +48,7 @@ public class StorageService {
             Files.copy(file.getInputStream(), target);
         } catch (IOException e) {
             log.error("Storage write failed for content type {}", contentType, e);
-            throw new StorageException("Could not store the file.", e);
+            throw new StorageException("profile.image.failed", "Could not store the file.", e);
         }
         return storedName;
     }

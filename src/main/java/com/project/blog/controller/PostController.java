@@ -3,6 +3,7 @@ package com.project.blog.controller;
 import com.project.blog.dto.CommentForm;
 import com.project.blog.dto.PostForm;
 import com.project.blog.exception.PostOwnershipException;
+import com.project.blog.flash.FlashService;
 import com.project.blog.model.Post;
 import com.project.blog.security.AppUserDetails;
 import com.project.blog.service.CommentService;
@@ -21,10 +22,12 @@ public class PostController {
 
     private final PostService postService;
     private final CommentService commentService;
+    private final FlashService flash;
 
-    public PostController(PostService postService, CommentService commentService) {
+    public PostController(PostService postService, CommentService commentService, FlashService flash) {
         this.postService = postService;
         this.commentService = commentService;
+        this.flash = flash;
     }
 
     @GetMapping("/create")
@@ -42,7 +45,7 @@ public class PostController {
             return "create_post";
         }
         postService.createPost(userDetails.getUser(), form.title(), form.content(), form.tagInput());
-        redirectAttributes.addFlashAttribute("flashMessage", "✨ Your thoughts are now out in the wild!");
+        flash.success(redirectAttributes, "post.created");
         return "redirect:/dashboard";
     }
 

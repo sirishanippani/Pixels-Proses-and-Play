@@ -2,6 +2,7 @@ package com.project.blog.controller;
 
 import com.project.blog.dto.ProfileForm;
 import com.project.blog.exception.StorageException;
+import com.project.blog.flash.FlashService;
 import com.project.blog.model.User;
 import com.project.blog.security.AppUserDetails;
 import com.project.blog.service.PostService;
@@ -23,11 +24,16 @@ public class ProfileController {
     private final UserService userService;
     private final PostService postService;
     private final StorageService storageService;
+    private final FlashService flash;
 
-    public ProfileController(UserService userService, PostService postService, StorageService storageService) {
+    public ProfileController(UserService userService,
+                             PostService postService,
+                             StorageService storageService,
+                             FlashService flash) {
         this.userService = userService;
         this.postService = postService;
         this.storageService = storageService;
+        this.flash = flash;
     }
 
     @GetMapping("/{username}")
@@ -61,7 +67,7 @@ public class ProfileController {
             return "edit_profile";
         }
         User updated = userService.updateProfile(currentUser.getUsername(), form.username(), form.bio());
-        redirectAttributes.addFlashAttribute("success", "💅 Your glow-up is now official!");
+        flash.success(redirectAttributes, "profile.updated");
         return "redirect:/profile/" + updated.getUsername();
     }
 
@@ -72,9 +78,9 @@ public class ProfileController {
         try {
             String storedName = storageService.store(file);
             userService.setProfileImage(userDetails.getUser().getId(), storedName);
-            redirectAttributes.addFlashAttribute("flashMessage", "🪞 New look, who dis?");
+            flash.success(redirectAttributes, "profile.image.updated");
         } catch (StorageException e) {
-            redirectAttributes.addFlashAttribute("flashMessage", "🚫 " + e.getMessage());
+            flash.error(redirectAttributes, e.getMessageCode());
         }
         return "redirect:/profile/" + userDetails.getUsername();
     }

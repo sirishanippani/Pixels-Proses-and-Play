@@ -1,5 +1,6 @@
 package com.project.blog.controller;
 
+import com.project.blog.flash.FlashService;
 import com.project.blog.security.AppUserDetails;
 import com.project.blog.service.AdminService;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -15,9 +16,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class AdminController {
 
     private final AdminService adminService;
+    private final FlashService flash;
 
-    public AdminController(AdminService adminService) {
+    public AdminController(AdminService adminService, FlashService flash) {
         this.adminService = adminService;
+        this.flash = flash;
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -35,7 +38,7 @@ public class AdminController {
     @PostMapping("/admin/user/delete/{id}")
     public String deleteUser(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         adminService.deleteUser(id);
-        redirectAttributes.addFlashAttribute("flashMessage", "💀 One less drama queen in the cast.");
+        flash.success(redirectAttributes, "admin.user.deleted");
         return "redirect:/admin";
     }
 
@@ -43,7 +46,7 @@ public class AdminController {
     @PostMapping("/admin/post/delete/{id}")
     public String deletePost(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         adminService.deletePost(id);
-        redirectAttributes.addFlashAttribute("flashMessage", "🔥 You just Thanos-snapped that post.");
+        flash.success(redirectAttributes, "admin.post.deleted");
         return "redirect:/admin";
     }
 
@@ -52,10 +55,10 @@ public class AdminController {
     public String toggleUserRole(@PathVariable Long id, RedirectAttributes redirectAttributes, Authentication auth) {
         boolean affectedSelf = adminService.toggleUserRole(id, auth.getName());
         if (affectedSelf) {
-            redirectAttributes.addFlashAttribute("flashMessage", "👑 New role unlocked! Time to re-enter like royalty.");
+            flash.success(redirectAttributes, "admin.user.role.toggled.self");
             redirectAttributes.addFlashAttribute("forceLogout", true);
         } else {
-            redirectAttributes.addFlashAttribute("flashMessage", "🔁 Someone just got a promotion... or demotion. Tea! ☕");
+            flash.success(redirectAttributes, "admin.user.role.toggled");
         }
         return "redirect:/admin";
     }

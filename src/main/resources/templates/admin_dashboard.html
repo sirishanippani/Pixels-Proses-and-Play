@@ -17,10 +17,7 @@
 <div class="container mt-5">
     <h2>Welcome, <span th:text="${admin}"></span>!</h2>
 
-    <div th:if="${flashMessage}" class="alert alert-success alert-dismissible fade show mt-3" role="alert">
-        <span th:text="${flashMessage}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
+    <div th:replace="fragments/flash :: flash"></div>
 
     <h4 class="mt-4">All Users</h4>
     <table class="table table-bordered">

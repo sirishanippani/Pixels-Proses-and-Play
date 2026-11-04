@@ -1,14 +1,13 @@
 <!-- fragments/flash.html -->
 <div th:fragment="flash">
     <div th:if="${flashMessage}"
-         class="toast align-items-center text-bg-success border-0 position-fixed top-0 end-0 m-3 pastel-toast"
+         class="toast align-items-center border-0 position-fixed top-0 end-0 m-3"
+         th:classappend="'text-bg-' + ${flashMessage.type.bootstrapVariant}"
          role="alert" aria-live="assertive" aria-atomic="true"
          style="z-index: 1055; min-width: 280px; border-radius: 1rem; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
 
         <div class="d-flex">
-            <div class="toast-body">
-                🌸 <span th:text="${flashMessage}">Your magic worked!</span>
-            </div>
+            <div class="toast-body" th:text="${flashMessage.text}">Your flash lands here.</div>
             <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
         </div>
     </div>
@@ -18,24 +17,8 @@
 <script>
     window.addEventListener('DOMContentLoaded', () => {
         const toastEl = document.querySelector('.toast');
-        const toastBody = toastEl?.querySelector('.toast-body');
-
-        // 🎰 Emoji pool
-        const emojis = ['✨', '🌸', '🦄', '📣', '🎉', '🍥', '🧁', '💌', '🥂', '🌈'];
-
-        if (toastEl && toastBody) {
-            const originalText = toastBody.textContent.trim();
-            const emoji = emojis[Math.floor(Math.random() * emojis.length)];
-            toastBody.textContent = `${emoji} ${originalText}`;
-            const toast = new bootstrap.Toast(toastEl, {
-                animation: true,
-                autohide: true,
-                delay: 3000
-            });
-            toast.show();
+        if (toastEl) {
+            new bootstrap.Toast(toastEl, { animation: true, autohide: true, delay: 3500 }).show();
         }
     });
 </script>
-
-
-

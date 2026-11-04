@@ -2,6 +2,7 @@ package com.project.blog.controller;
 
 import com.project.blog.dto.CommentForm;
 import com.project.blog.exception.CommentOwnershipException;
+import com.project.blog.flash.FlashService;
 import com.project.blog.security.AppUserDetails;
 import com.project.blog.service.CommentService;
 import jakarta.validation.Valid;
@@ -21,9 +22,11 @@ public class CommentController {
             "org.springframework.validation.BindingResult." + COMMENT_FORM_ATTR;
 
     private final CommentService commentService;
+    private final FlashService flash;
 
-    public CommentController(CommentService commentService) {
+    public CommentController(CommentService commentService, FlashService flash) {
         this.commentService = commentService;
+        this.flash = flash;
     }
 
     @PostMapping("/post/{postId}/comment")
@@ -38,7 +41,7 @@ public class CommentController {
             return "redirect:/post/" + postId;
         }
         commentService.createComment(postId, loggedInUser.getUser(), form.content());
-        redirectAttributes.addFlashAttribute("flashMessage", "💬 Comment added!");
+        flash.success(redirectAttributes, "comment.posted");
         return "redirect:/post/" + postId;
     }
 
@@ -48,10 +51,10 @@ public class CommentController {
                                 RedirectAttributes redirectAttributes) {
         try {
             Long postId = commentService.deleteComment(id, loggedInUser.getUser());
-            redirectAttributes.addFlashAttribute("flashMessage", "🧹 Comment erased from existence.");
+            flash.success(redirectAttributes, "comment.deleted");
             return "redirect:/post/" + postId;
         } catch (CommentOwnershipException e) {
-            redirectAttributes.addFlashAttribute("flashMessage", "🛑 Not your comment to delete!");
+            flash.error(redirectAttributes, "comment.ownership.denied");
             return "redirect:/post/" + e.getPostId();
         }
     }
