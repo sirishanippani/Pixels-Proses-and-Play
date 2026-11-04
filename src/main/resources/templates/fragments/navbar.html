@@ -19,7 +19,7 @@
                             <a class="nav-link" href="/dashboard">Dashboard</a>
                         </li>
                         <li class="nav-item" sec:authorize="hasRole('USER')">
-                            <a class="nav-link" href="/posts/create">Create Post</a>
+                            <a class="nav-link" th:href="@{/post/create}">Create Post</a>
                         </li>
                         <li class="nav-item" sec:authorize="hasRole('ADMIN')">
                             <a class="nav-link" href="/admin">Admin Panel</a>
