@@ -25,6 +25,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyIterable;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -36,6 +38,7 @@ class PostServiceTest {
     @Mock private PostSummaryMapper summaryMapper;
     @Mock private PostSearchResultMapper searchResultMapper;
     @Mock private TagService tagService;
+    @Mock private HtmlSanitizer htmlSanitizer;
 
     @InjectMocks private PostService postService;
 
@@ -51,6 +54,20 @@ class PostServiceTest {
         bob = new User();
         bob.setId(2L);
         bob.setUsername("bob");
+
+        lenient().when(htmlSanitizer.sanitize(anyString())).thenAnswer(inv -> inv.getArgument(0));
+    }
+
+    @Test
+    void createPost_storesSanitizedContentNotRawInput() {
+        when(tagService.resolveOrCreate("")).thenReturn(Set.of());
+        when(postRepository.save(any(Post.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(htmlSanitizer.sanitize("<p>hi</p><script>bad()</script>")).thenReturn("<p>hi</p>");
+
+        Post created = postService.createPost(alice, "T", "<p>hi</p><script>bad()</script>", "");
+
+        assertThat(created.getContent()).isEqualTo("<p>hi</p>");
+        verify(htmlSanitizer).sanitize("<p>hi</p><script>bad()</script>");
     }
 
     @Test

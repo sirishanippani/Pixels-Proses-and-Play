@@ -24,15 +24,18 @@ public class PostService {
     private final PostSummaryMapper summaryMapper;
     private final PostSearchResultMapper searchResultMapper;
     private final TagService tagService;
+    private final HtmlSanitizer htmlSanitizer;
 
     public PostService(PostRepository postRepository,
                        PostSummaryMapper summaryMapper,
                        PostSearchResultMapper searchResultMapper,
-                       TagService tagService) {
+                       TagService tagService,
+                       HtmlSanitizer htmlSanitizer) {
         this.postRepository = postRepository;
         this.summaryMapper = summaryMapper;
         this.searchResultMapper = searchResultMapper;
         this.tagService = tagService;
+        this.htmlSanitizer = htmlSanitizer;
     }
 
     private static final int FEATURED_POST_COUNT = 3;
@@ -81,7 +84,7 @@ public class PostService {
         Post post = new Post();
         post.setUser(author);
         post.setTitle(title);
-        post.setContent(content);
+        post.setContent(htmlSanitizer.sanitize(content));
         post.setTags(tagService.resolveOrCreate(tagCsv));
         return postRepository.save(post);
     }
@@ -92,7 +95,7 @@ public class PostService {
                 .orElseThrow(() -> new PostNotFoundException(id));
         assertOwnership(post, requester);
         post.setTitle(title);
-        post.setContent(content);
+        post.setContent(htmlSanitizer.sanitize(content));
         post.setTags(tagService.resolveOrCreate(tagCsv));
         return postRepository.save(post);
     }
