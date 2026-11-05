@@ -1,166 +1,141 @@
 <!-- fragments/navbar.html -->
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-    <div th:fragment="navbar">
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <div class="container-fluid">
-                <a class="navbar-brand d-flex align-items-center gap-2" href="/">
-                    <img src="/images/logo-alt.png" alt="Logo" style="height: 30px !important; max-width: 100px !important; display: inline-block;" />
-                    <span id="brandTextStatic" class="gradient-text"></span><span id="brandTextND">nd</span><span id="brandTextPlay" class="gradient-text"></span>
-                </a>
+<div th:fragment="navbar">
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand" th:href="@{/}">
+                <img th:src="@{/images/logo-alt.png}" alt="" aria-hidden="true" />
+                <span>Pixels, Proses &amp; Play</span>
+            </a>
 
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav ms-auto">
-                        <li class="nav-item" sec:authorize="isAuthenticated()">
-                            <a class="nav-link" href="/dashboard">Dashboard</a>
-                        </li>
-                        <li class="nav-item" sec:authorize="hasRole('USER')">
-                            <a class="nav-link" th:href="@{/post/create}">Create Post</a>
-                        </li>
-                        <li class="nav-item" sec:authorize="hasRole('ADMIN')">
-                            <a class="nav-link" href="/admin">Admin Panel</a>
-                        </li>
-                        <li class="nav-item" sec:authorize="isAnonymous()">
-                            <a class="nav-link" href="/login">Login</a>
-                        </li>
-                        <li class="nav-item" sec:authorize="isAnonymous()">
-                            <a class="nav-link" href="/register">Register</a>
-                        </li>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-lg-center">
+                    <li class="nav-item" sec:authorize="isAuthenticated()">
+                        <a class="nav-link" th:href="@{/dashboard}">Dashboard</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="hasRole('USER')">
+                        <a class="nav-link" th:href="@{/post/create}">Write</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                        <a class="nav-link" th:href="@{/admin}">Admin</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="isAnonymous()">
+                        <a class="nav-link" th:href="@{/login}">Sign in</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="isAnonymous()">
+                        <a class="nav-link" th:href="@{/register}">Join</a>
+                    </li>
 
-                        <!-- Authenticated user dropdown -->
-                        <li class="nav-item dropdown" sec:authorize="isAuthenticated()">
-                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
-                               data-bs-toggle="dropdown" aria-expanded="false">
-                                <span th:text="${#authentication.principal.username}">Username</span>
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                                <li>
-                                    <span class="dropdown-item disabled">
-                                        Logged in as: <span th:text="${#authentication.principal.username}">Username</span>
-                                    </span>
-                                </li>
-                                <li><a class="dropdown-item" th:href="@{'/profile/' + ${#authentication.principal.username}}">Profile</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <form th:action="@{/logout}" method="post" class="px-3 py-1">
-                                        <button type="submit" class="dropdown-item">Logout</button>
-                                    </form>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
-                </div>
+                    <li class="nav-item dropdown" sec:authorize="isAuthenticated()">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            <span class="byline" th:text="${#authentication.principal.username}">Username</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li>
+                                <span class="dropdown-item disabled">
+                                    Signed in as <span class="byline" th:text="${#authentication.principal.username}">Username</span>
+                                </span>
+                            </li>
+                            <li><a class="dropdown-item"
+                                   th:href="@{'/profile/' + ${#authentication.principal.username}}">Profile</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form th:action="@{/logout}" method="post" class="m-0">
+                                    <button type="submit" class="dropdown-item">Sign out</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
 
-                <form class="d-flex ms-3" role="search">
-                    <input class="form-control" type="search" id="search-input" placeholder="Search posts..." aria-label="Search">
-                    <ul id="search-suggestions" class="list-group position-absolute mt-2 w-100" style="z-index: 1000;"></ul>
+                <form class="d-flex ms-lg-3 my-2 my-lg-0 position-relative" role="search" onsubmit="return false;">
+                    <input class="form-control" type="search" id="search-input"
+                           placeholder="Search posts…" aria-label="Search">
+                    <ul id="search-suggestions" class="list-group position-absolute mt-2 w-100"
+                        style="top: 100%; z-index: 1000;"></ul>
                 </form>
 
-                <button id="darkModeToggle" class="btn btn-sm btn-outline-secondary ms-3">🌙</button>
+                <button id="themeToggle" class="theme-toggle ms-lg-3 my-2 my-lg-0"
+                        type="button" aria-label="Toggle color theme">
+                    <svg id="themeIcon" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                    </svg>
+                </button>
             </div>
-        </nav>
+        </div>
+    </nav>
 
-        <script>
+    <script>
+        (function () {
+            // Search suggestions
             const input = document.getElementById('search-input');
             const suggestions = document.getElementById('search-suggestions');
-
-            input.addEventListener('input', async () => {
-              const query = input.value.trim();
-              if (!query) return suggestions.innerHTML = '';
-
-              const res = await fetch(`/search?q=${encodeURIComponent(query)}`);
-              const data = await res.json();
-
-              if (data.length === 0) {
-                suggestions.innerHTML = `<li class='list-group-item text-muted'>No results</li>`;
-              } else {
-                suggestions.innerHTML = data.map(post =>
-                  `<li class='list-group-item'><a href='/post/${post.id}' class='text-decoration-none'>${post.title}</a></li>`
-                ).join('');
-              }
-            });
-
-            const toggleBtn = document.getElementById('darkModeToggle');
-            const html = document.documentElement;
-            const savedMode = localStorage.getItem('darkMode');
-
-            if (savedMode === 'true') html.classList.add('dark');
-
-            if (toggleBtn) {
-              toggleBtn.addEventListener('click', () => {
-                html.classList.toggle('dark');
-                localStorage.setItem('darkMode', html.classList.contains('dark'));
-              });
+            if (input) {
+                input.addEventListener('input', async () => {
+                    const query = input.value.trim();
+                    if (!query) { suggestions.innerHTML = ''; return; }
+                    const res = await fetch(`/search?q=${encodeURIComponent(query)}`);
+                    const data = await res.json();
+                    suggestions.innerHTML = data.length === 0
+                        ? `<li class='list-group-item text-muted'>Nothing matches yet.</li>`
+                        : data.map(post =>
+                            `<li class='list-group-item'><a href='/post/${post.id}'>${post.title}</a></li>`
+                          ).join('');
+                });
+                document.addEventListener('click', (e) => {
+                    if (!input.contains(e.target) && !suggestions.contains(e.target)) {
+                        suggestions.innerHTML = '';
+                    }
+                });
             }
 
-          // 🎉 Animated Brand Script
-          const basePrefix = "PixelsProses";
-          const ndText = "nd";
-          const baseSuffix = "Play";
-          const emojis = ["🎶", "📖", "🖥️", "🧠", "🎮", "⌨️", "📝", "🎭"];
-          const gradients = [
-            "linear-gradient(90deg, #1e90ff, #00ffff)",
-            "linear-gradient(90deg, #f9c5d1, #fbc2eb)",
-            "linear-gradient(90deg, #bdc3c7, #2c3e50)",
-            "linear-gradient(90deg, #d4fc79, #96e6a1)",
-            "linear-gradient(90deg, #fc466b, #3f5efb)",
-            "linear-gradient(90deg, #ffecd2, #fcb69f)",
-            "linear-gradient(90deg, #d299c2, #fef9d7)",
-            "linear-gradient(90deg, #f093fb, #f5576c)"
-          ];
+            // Theme toggle — [data-theme="dark"] on <html> wins over prefers-color-scheme.
+            const root = document.documentElement;
+            const toggle = document.getElementById('themeToggle');
+            const icon = document.getElementById('themeIcon');
 
-          const staticEl = document.getElementById("brandTextStatic");
-          const ndEl = document.getElementById("brandTextND");
-          const playEl = document.getElementById("brandTextPlay");
+            const sunPath = 'M12 3v2M12 19v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42';
+            const sunCircle = { cx: 12, cy: 12, r: 4 };
+            const moonPath = 'M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z';
 
-          let emojiIndex = 0;
-
-          function typeText(prefix, nd, suffix, emoji) {
-            staticEl.textContent = "";
-            ndEl.textContent = "";
-            playEl.textContent = "";
-            staticEl.style.backgroundImage = gradients[emojiIndex];
-            playEl.style.backgroundImage = gradients[emojiIndex];
-
-            let i = 0;
-            function typePrefix() {
-              if (i < prefix.length) {
-                staticEl.textContent += prefix.charAt(i);
-                i++;
-                setTimeout(typePrefix, 80);
-              } else {
-                typeND();
-              }
+            function renderIcon(mode) {
+                if (!icon) return;
+                if (mode === 'dark') {
+                    icon.innerHTML = `<circle cx="${sunCircle.cx}" cy="${sunCircle.cy}" r="${sunCircle.r}"/><path d="${sunPath}"/>`;
+                } else {
+                    icon.innerHTML = `<path d="${moonPath}"/>`;
+                }
             }
 
-            function typeND() {
-              ndEl.innerHTML = `<span>${nd}</span>`;
-              setTimeout(typeSuffix, 300);
+            function currentMode() {
+                const explicit = root.getAttribute('data-theme');
+                if (explicit) return explicit;
+                return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
             }
 
-            let j = 0;
-            const fullSuffix = suffix + emoji + "()";
-            function typeSuffix() {
-              if (j < fullSuffix.length) {
-                playEl.textContent += fullSuffix.charAt(j);
-                j++;
-                setTimeout(typeSuffix, 80);
-              } else {
-                emojiIndex = (emojiIndex + 1) % emojis.length;
-                setTimeout(() => typeText(basePrefix, ndText, baseSuffix, emojis[emojiIndex]), 3000);
-              }
+            // Initialize from storage or system preference
+            const saved = localStorage.getItem('theme');
+            if (saved === 'dark' || saved === 'light') {
+                root.setAttribute('data-theme', saved);
             }
+            renderIcon(currentMode());
 
-            typePrefix();
-          }
-
-          document.addEventListener("DOMContentLoaded", () => {
-            typeText(basePrefix, ndText, baseSuffix, emojis[emojiIndex]);
-          });
-        </script>
-    </div>
+            if (toggle) {
+                toggle.addEventListener('click', () => {
+                    const next = currentMode() === 'dark' ? 'light' : 'dark';
+                    root.setAttribute('data-theme', next);
+                    localStorage.setItem('theme', next);
+                    renderIcon(next);
+                });
+            }
+        })();
+    </script>
+</div>
 </html>

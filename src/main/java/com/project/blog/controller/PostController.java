@@ -90,6 +90,7 @@ public class PostController {
                              @Valid @ModelAttribute("postForm") PostForm form,
                              BindingResult bindingResult,
                              @AuthenticationPrincipal AppUserDetails userDetails,
+                             RedirectAttributes redirectAttributes,
                              Model model) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("postId", id);
@@ -99,18 +100,22 @@ public class PostController {
             postService.updatePost(id, userDetails.getUser(),
                     form.title(), form.content(), form.tagInput());
         } catch (PostOwnershipException e) {
+            flash.error(redirectAttributes, "post.ownership.denied");
             return "redirect:/dashboard";
         }
+        flash.success(redirectAttributes, "post.updated");
         return "redirect:/post/" + id;
     }
 
     @PostMapping("/delete/{id}")
     public String deletePost(@PathVariable Long id,
-                             @AuthenticationPrincipal AppUserDetails userDetails) {
+                             @AuthenticationPrincipal AppUserDetails userDetails,
+                             RedirectAttributes redirectAttributes) {
         try {
             postService.deletePost(id, userDetails.getUser());
+            flash.success(redirectAttributes, "post.deleted");
         } catch (PostOwnershipException e) {
-            // silently ignore — preserves existing behavior; UX bug flagged for later
+            flash.error(redirectAttributes, "post.ownership.denied");
         }
         return "redirect:/dashboard";
     }

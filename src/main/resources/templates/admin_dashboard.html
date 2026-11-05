@@ -1,26 +1,23 @@
 <!-- templates/admin_dashboard.html -->
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head><title>Admin Panel</title>
-    <link rel="stylesheet" th:href="@{/css/theme.css}">
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Admin · Pixels, Proses & Play')}"></head>
 <body>
 <script th:if="${forceLogout}" th:inline="javascript">
-    setTimeout(() => {
-      window.location.href = '/logout';
-    }, 2000);
+    setTimeout(() => { window.location.href = '/logout'; }, 1600);
 </script>
 
-<div th:replace="fragments/navbar :: navbar"></div>
-<div class="container mt-5">
-    <h2>Welcome, <span th:text="${admin}"></span>!</h2>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+<div th:replace="~{fragments/flash :: flash}"></div>
 
-    <div th:replace="fragments/flash :: flash"></div>
+<main class="container">
+    <h1 style="margin-top: var(--s-7);">Admin</h1>
+    <p style="color: var(--muted); margin-bottom: var(--s-6);">
+        Signed in as <span class="byline" th:text="${admin}">admin</span>.
+    </p>
 
-    <h4 class="mt-4">All Users</h4>
-    <table class="table table-bordered">
+    <h2 class="section-heading">Users</h2>
+    <table class="admin-table">
         <thead>
         <tr>
             <th>ID</th>
@@ -32,20 +29,21 @@
         </thead>
         <tbody>
         <tr th:each="user : ${users}">
-            <td th:text="${user.id}"></td>
-            <td th:text="${user.email}"></td>
-            <td th:text="${user.username}"></td>
-            <td th:text="${user.role}"></td>
+            <td th:text="${user.id}">1</td>
+            <td th:text="${user.email}">user@example.com</td>
+            <td th:text="${user.username}">username</td>
+            <td><span class="role-badge" th:text="${user.role}">ROLE_USER</span></td>
             <td>
-                <div class="d-flex gap-2">
-                    <!-- Delete Button -->
-                    <form th:action="@{'/admin/user/delete/' + ${user.id}}" method="post">
-                        <button class="btn btn-sm btn-danger" onclick="return confirm('Delete this user?')">Delete</button>
+                <div class="cell-actions">
+                    <form th:action="@{'/admin/user/delete/' + ${user.id}}" method="post" style="margin: 0;">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                        <button class="btn btn-outline-secondary btn-sm"
+                                onclick="return confirm('Delete this user?')">Delete</button>
                     </form>
-
-                    <!-- Toggle Role Button -->
-                    <form th:action="@{'/admin/user/toggle-role/' + ${user.id}}" method="post">
-                        <button class="btn btn-sm btn-warning" onclick="return confirm('Toggle role of this user?')">Toggle Role</button>
+                    <form th:action="@{'/admin/user/toggle-role/' + ${user.id}}" method="post" style="margin: 0;">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                        <button class="btn btn-outline-secondary btn-sm"
+                                onclick="return confirm('Toggle this user’s role?')">Toggle role</button>
                     </form>
                 </div>
             </td>
@@ -53,25 +51,35 @@
         </tbody>
     </table>
 
-    <h4 class="mt-5">All Posts</h4>
-    <table class="table table-bordered">
-        <thead><tr><th>ID</th><th>Title</th><th>Author</th><th>Action</th></tr></thead>
+    <h2 class="section-heading">Posts</h2>
+    <table class="admin-table">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Action</th>
+        </tr>
+        </thead>
         <tbody>
         <tr th:each="post : ${posts}">
-            <td th:text="${post.id}"></td>
-            <td th:text="${post.title}"></td>
-            <td th:text="${post.user.username}"></td>
+            <td th:text="${post.id}">1</td>
+            <td><a th:href="@{/post/{id}(id=${post.id})}" th:text="${post.title}">Title</a></td>
+            <td th:text="${post.user.username}">author</td>
             <td>
-                <form th:action="@{'/admin/post/delete/' + ${post.id}}" method="post">
-                    <button class="btn btn-sm btn-danger" onclick="return confirm('Delete this post?')">Delete</button>
+                <form th:action="@{'/admin/post/delete/' + ${post.id}}" method="post" style="margin: 0;">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                    <button class="btn btn-outline-secondary btn-sm"
+                            onclick="return confirm('Delete this post?')">Delete</button>
                 </form>
             </td>
         </tr>
         </tbody>
     </table>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <div style="height: var(--s-8)"></div>
+</main>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 </body>
 </html>

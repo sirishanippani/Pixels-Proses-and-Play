@@ -1,71 +1,63 @@
 <!-- templates/create_post.html -->
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head><title>Create Post</title>
-    <link rel="stylesheet" th:href="@{/css/theme.css}">
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Toast UI Editor -->
-    <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
-    <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-
-</head>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('New post · Pixels, Proses & Play')}"></head>
 <body>
-<div th:replace="fragments/navbar :: navbar"></div>
-<div class="container mt-5">
-    <h2>Create Post</h2>
-    <form id="postForm" th:action="@{/post/create}" th:object="${postForm}" method="post" novalidate>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+<div th:replace="~{fragments/flash :: flash}"></div>
 
-        <!--Title-->
-        <div class="mb-3">
-            <label>Title</label>
-            <input type="text" th:field="*{title}" class="form-control" th:errorclass="is-invalid"/>
+<main class="container" style="max-width: 720px;">
+    <h1 style="margin-top: var(--s-7);">New post</h1>
+    <p style="color: var(--muted); margin-bottom: var(--s-6);">Write what you'd want to read.</p>
+
+    <form id="postForm" th:action="@{/post/create}" th:object="${postForm}" method="post" novalidate>
+        <div class="form-group" style="margin-bottom: var(--s-5);">
+            <label class="form-label" for="title">Title</label>
+            <input type="text" id="title" th:field="*{title}" class="form-control"
+                   th:errorclass="is-invalid" placeholder="Give it a name">
             <div class="invalid-feedback" th:errors="*{title}"></div>
         </div>
 
-        <label for="tagInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mt-3">Tags (comma-separated)</label>
-        <input type="text" th:field="*{tagInput}" id="tagInput"
-               placeholder="e.g. tech, productivity, pastel vibes"
-               class="w-full p-2 mt-1 rounded border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
-               th:errorclass="is-invalid">
-        <div class="invalid-feedback" th:errors="*{tagInput}"></div>
-
-        <!--Content-->
-        <div class="mb-3">
-            <label>Content</label>
-            <div id="toast-editor"></div>
-            <!-- Hidden input to capture HTML content; pre-fills with submitted value on validation error -->
-            <input type="hidden" th:field="*{content}" id="content"/>
-            <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('content')}" th:errors="*{content}"></div>
+        <div class="form-group" style="margin-bottom: var(--s-5);">
+            <label class="form-label" for="tagInput">Tags</label>
+            <input type="text" id="tagInput" th:field="*{tagInput}" class="form-control"
+                   th:errorclass="is-invalid" placeholder="comma, separated, tags">
+            <div class="invalid-feedback" th:errors="*{tagInput}"></div>
         </div>
 
-        <button type="submit" class="btn btn-success">Publish</button>
+        <div class="form-group" style="margin-bottom: var(--s-5);">
+            <label class="form-label">Body</label>
+            <div id="toast-editor"></div>
+            <input type="hidden" th:field="*{content}" id="content">
+            <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('content')}"
+                 th:errors="*{content}"></div>
+        </div>
+
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary">Publish</button>
+            <a th:href="@{/dashboard}" class="btn btn-outline-secondary">Cancel</a>
+        </div>
     </form>
-</div>
 
+    <div style="height: var(--s-8)"></div>
+</main>
 
+<link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css">
+<script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 <script>
-
-    let editor;
-
-    document.addEventListener('DOMContentLoaded', function () {
-      editor = new toastui.Editor({
-        el: document.querySelector('#toast-editor'),
-        height: '400px',
-        initialEditType: 'wysiwyg',
-        previewStyle: 'vertical',
-        hideModeSwitch: true,
-        initialValue: document.querySelector('#content')?.value || ''
-      });
-
-      const form = document.querySelector('#postForm');
-      form.addEventListener('submit', function () {
-        const html = editor.getHTML();
-        console.log("Saving content:", html);
-        document.querySelector('#content').value = html;
-      });
+    document.addEventListener('DOMContentLoaded', () => {
+        const editor = new toastui.Editor({
+            el: document.querySelector('#toast-editor'),
+            height: '420px',
+            initialEditType: 'wysiwyg',
+            previewStyle: 'vertical',
+            hideModeSwitch: true,
+            initialValue: document.querySelector('#content')?.value || ''
+        });
+        document.querySelector('#postForm').addEventListener('submit', () => {
+            document.querySelector('#content').value = editor.getHTML();
+        });
     });
 </script>
 </body>
