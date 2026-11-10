@@ -4,16 +4,13 @@ A small, opinionated blogging platform written in Spring Boot — rich-text post
 
 Originally a Scaler Neovarsity capstone project. Rebuilt into a production-quality codebase across seven phases: a safety net of tests, a service layer, form DTOs with validation, portable schema migrations, defense-in-depth security, an i18n-ready UI, and a containerised deployment story.
 
-![Home](https://github.com/user-attachments/assets/33fa7e8c-6d5a-43cd-91f6-ac7332437e64)
-
 ---
 
 ## Live demo
 
-<!-- Deployed on Render, Postgres on Neon. The free dyno sleeps after 15 minutes
-     of inactivity; the first request after a nap takes about a minute. -->
+**[pixels-proses-and-play.onrender.com](https://pixels-proses-and-play.onrender.com)**
 
-Coming soon — the production URL will land here once the first deploy is green.
+Deployed on Render (web service), Postgres on Neon. UptimeRobot pings `/actuator/health` every five minutes to keep the free dyno warm — if you still catch it cold, the first request takes about a minute to boot.
 
 ---
 
@@ -109,17 +106,6 @@ Environment variables the container expects:
 | `ADMIN_USERNAME` | Seeded on first boot if no admin exists |
 | `ADMIN_EMAIL` | Seeded on first boot if no admin exists |
 | `ADMIN_PASSWORD` | Seeded on first boot if no admin exists |
-
-## Screenshots
-
-### Login
-![Login](https://github.com/user-attachments/assets/87690ed5-1342-4e0d-b4e3-4c14d77b0fd6)
-
-### Dashboard
-![Dashboard](https://github.com/user-attachments/assets/65e352de-36b8-4ae3-8eba-ca49ea4db49f)
-
-### Post detail
-![Post detail](https://github.com/user-attachments/assets/8104ad0c-200d-474c-91aa-ed5f0efbd012)
 
 ## Project memory
 
