@@ -1,0 +1,81 @@
+<mxfile host="app.diagrams.net" agent="report">
+  <diagram name="Phased Pipeline" id="fig-2-2">
+    <mxGraphModel dx="1158" dy="708" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="650" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=16;fontStyle=1;fontFamily=Times New Roman" value="Phased Refactor Pipeline" vertex="1">
+          <mxGeometry height="30" width="400" x="400" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="p0" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;fontFamily=Times New Roman;fontSize=11;fontStyle=2" value="Phase 0&#xa;Secrets Purge&#xa;&#xa;(skipped;&#xa;dummy creds)" vertex="1">
+          <mxGeometry height="110" width="180" x="60" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="p1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Times New Roman;fontSize=11" value="Phase 1&#xa;Safety Net&#xa;&#xa;H2 local profile,&#xa;6 baseline tests" vertex="1">
+          <mxGeometry height="110" width="180" x="300" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="p2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Times New Roman;fontSize=11" value="Phase 2&#xa;Data-Corruption Fix&#xa;&#xa;PostSummaryDto,&#xa;Mapper, DTO seam" vertex="1">
+          <mxGeometry height="110" width="180" x="540" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="p3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Times New Roman;fontSize=11" value="Phase 3&#xa;Service Layer&#xa;&#xa;Constructor DI,&#xa;domain exceptions" vertex="1">
+          <mxGeometry height="110" width="180" x="780" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="p4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Times New Roman;fontSize=11" value="Phase 4&#xa;Form DTOs&#xa;&#xa;Jakarta Validation,&#xa;mass-assignment seal" vertex="1">
+          <mxGeometry height="110" width="160" x="1020" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="p5" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontFamily=Times New Roman;fontSize=11" value="Phase 5&#xa;Portability&#xa;&#xa;Flyway per-vendor,&#xa;N+1 collapse" vertex="1">
+          <mxGeometry height="110" width="160" x="1020" y="270" as="geometry" />
+        </mxCell>
+        <mxCell id="p6" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontFamily=Times New Roman;fontSize=11" value="Phase 6&#xa;Security &amp; Hygiene&#xa;&#xa;OSIV off, StorageService,&#xa;HtmlSanitizer, OWASP" vertex="1">
+          <mxGeometry height="110" width="180" x="780" y="270" as="geometry" />
+        </mxCell>
+        <mxCell id="p65" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontFamily=Times New Roman;fontSize=11" value="Phase 6.5&#xa;UI / UX Polish&#xa;&#xa;Design tokens,&#xa;MessageSource, i18n" vertex="1">
+          <mxGeometry height="110" width="180" x="540" y="270" as="geometry" />
+        </mxCell>
+        <mxCell id="p7" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontFamily=Times New Roman;fontSize=11" value="Phase 7&#xa;Deployment&#xa;&#xa;Docker, Render,&#xa;Neon Postgres" vertex="1">
+          <mxGeometry height="110" width="180" x="300" y="270" as="geometry" />
+        </mxCell>
+        <mxCell id="live" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontFamily=Times New Roman;fontSize=11;fontStyle=1" value="Live Deployment&#xa;pixels-proses-and-play&#xa;.onrender.com" vertex="1">
+          <mxGeometry height="110" width="180" x="60" y="270" as="geometry" />
+        </mxCell>
+        <mxCell id="a01" edge="1" parent="1" source="p0" style="edgeStyle=none;rounded=0;html=1;endArrow=classic;strokeColor=#000000" target="p1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a12" edge="1" parent="1" source="p1" style="edgeStyle=none;rounded=0;html=1;endArrow=classic;strokeColor=#000000" target="p2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a23" edge="1" parent="1" source="p2" style="edgeStyle=none;rounded=0;html=1;endArrow=classic;strokeColor=#000000" target="p3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a34" edge="1" parent="1" source="p3" style="edgeStyle=none;rounded=0;html=1;endArrow=classic;strokeColor=#000000" target="p4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a45" edge="1" parent="1" source="p4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;strokeColor=#000000" target="p5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a56" edge="1" parent="1" source="p5" style="edgeStyle=none;rounded=0;html=1;endArrow=classic;strokeColor=#000000" target="p6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a665" edge="1" parent="1" source="p6" style="edgeStyle=none;rounded=0;html=1;endArrow=classic;strokeColor=#000000" target="p65">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a657" edge="1" parent="1" source="p65" style="edgeStyle=none;rounded=0;html=1;endArrow=classic;strokeColor=#000000" target="p7">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a7live" edge="1" parent="1" source="p7" style="edgeStyle=none;rounded=0;html=1;endArrow=classic;strokeColor=#000000" target="live">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a2-65" edge="1" parent="1" source="p2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;strokeColor=#9673a6;dashed=1;dashPattern=8 4;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;endFill=1" target="p65">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a2-65-lbl" connectable="0" parent="a2-65" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontFamily=Times New Roman;fontSize=10;fontStyle=2;fontColor=#9673a6" value="DTO separation enables&#xa;template-safe design tokens" vertex="1">
+          <mxGeometry relative="1" x="-0.1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="legend" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=10;fontFamily=Times New Roman;fontStyle=2" value="Legend:  Solid arrows — direct phase dependency (artifact of one phase consumed by the next).  Dashed arrow — indirect dependency carried across the pipeline.&#xa;Colour grouping:  Blue — refactor foundations (phases 1–4).  Green — correctness and portability (phases 5–6).  Yellow — presentation (phase 6.5).  Red — deployment (phase 7)." vertex="1">
+          <mxGeometry height="60" width="1000" x="100" y="470" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

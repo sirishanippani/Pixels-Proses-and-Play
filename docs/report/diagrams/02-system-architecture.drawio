@@ -1,0 +1,157 @@
+<mxfile host="app.diagrams.net" agent="report" pages="2">
+  <diagram name="System Architecture" id="fig-2-1">
+    <mxGraphModel dx="1422" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="800" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <!-- Title -->
+        <mxCell id="title" value="Pixels, Proses &amp; Play — High-Level Architecture" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=16;fontStyle=1;fontFamily=Times New Roman" vertex="1" parent="1">
+          <mxGeometry x="300" y="20" width="500" height="30" as="geometry" />
+        </mxCell>
+        <!-- Browser layer -->
+        <mxCell id="browser" value="Web Browser&#xa;(Thymeleaf-rendered HTML, session cookie)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontFamily=Times New Roman;fontSize=12" vertex="1" parent="1">
+          <mxGeometry x="400" y="70" width="300" height="60" as="geometry" />
+        </mxCell>
+        <!-- Spring Security (cross-cutting) -->
+        <mxCell id="security" value="Spring Security&#xa;Filter Chain&#xa;(authn, authz,&#xa;CSRF, BCrypt)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontFamily=Times New Roman;fontSize=11;verticalAlign=middle" vertex="1" parent="1">
+          <mxGeometry x="60" y="200" width="140" height="300" as="geometry" />
+        </mxCell>
+        <!-- Controller layer container -->
+        <mxCell id="ctrl-layer" value="Controller Layer" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#000000;dashed=1;verticalAlign=top;fontFamily=Times New Roman;fontSize=12;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="240" y="170" width="820" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="postCtrl" value="PostController" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Times New Roman;fontSize=11" vertex="1" parent="1">
+          <mxGeometry x="260" y="210" width="120" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="authCtrl" value="AuthController" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Times New Roman;fontSize=11" vertex="1" parent="1">
+          <mxGeometry x="390" y="210" width="120" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="commentCtrl" value="CommentController" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Times New Roman;fontSize=11" vertex="1" parent="1">
+          <mxGeometry x="520" y="210" width="130" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="adminCtrl" value="AdminController" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Times New Roman;fontSize=11" vertex="1" parent="1">
+          <mxGeometry x="660" y="210" width="120" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="profileCtrl" value="ProfileController" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Times New Roman;fontSize=11" vertex="1" parent="1">
+          <mxGeometry x="790" y="210" width="120" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="searchCtrl" value="SearchController" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Times New Roman;fontSize=11" vertex="1" parent="1">
+          <mxGeometry x="920" y="210" width="120" height="50" as="geometry" />
+        </mxCell>
+        <!-- Service layer -->
+        <mxCell id="svc-layer" value="Service Layer" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#000000;dashed=1;verticalAlign=top;fontFamily=Times New Roman;fontSize=12;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="240" y="310" width="820" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="postSvc" value="PostService" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontFamily=Times New Roman;fontSize=11" vertex="1" parent="1">
+          <mxGeometry x="260" y="350" width="110" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="userSvc" value="UserService" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontFamily=Times New Roman;fontSize=11" vertex="1" parent="1">
+          <mxGeometry x="380" y="350" width="110" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="tagSvc" value="TagService" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontFamily=Times New Roman;fontSize=11" vertex="1" parent="1">
+          <mxGeometry x="500" y="350" width="100" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="commentSvc" value="CommentService" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontFamily=Times New Roman;fontSize=11" vertex="1" parent="1">
+          <mxGeometry x="610" y="350" width="120" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="storageSvc" value="StorageService" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontFamily=Times New Roman;fontSize=11" vertex="1" parent="1">
+          <mxGeometry x="740" y="350" width="110" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="sanitizer" value="HtmlSanitizer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontFamily=Times New Roman;fontSize=11" vertex="1" parent="1">
+          <mxGeometry x="860" y="350" width="110" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="adminSvc" value="AdminService" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontFamily=Times New Roman;fontSize=11" vertex="1" parent="1">
+          <mxGeometry x="980" y="350" width="110" height="50" as="geometry" />
+        </mxCell>
+        <!-- Repository layer -->
+        <mxCell id="repo-layer" value="Repository Layer (Spring Data JPA)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#000000;dashed=1;verticalAlign=top;fontFamily=Times New Roman;fontSize=12;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="240" y="450" width="620" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="postRepo" value="PostRepository" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontFamily=Times New Roman;fontSize=11" vertex="1" parent="1">
+          <mxGeometry x="260" y="485" width="130" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="userRepo" value="UserRepository" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontFamily=Times New Roman;fontSize=11" vertex="1" parent="1">
+          <mxGeometry x="400" y="485" width="130" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="tagRepo" value="TagRepository" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontFamily=Times New Roman;fontSize=11" vertex="1" parent="1">
+          <mxGeometry x="540" y="485" width="130" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="commentRepo" value="CommentRepository" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontFamily=Times New Roman;fontSize=11" vertex="1" parent="1">
+          <mxGeometry x="680" y="485" width="160" height="50" as="geometry" />
+        </mxCell>
+        <!-- Persistence tier -->
+        <mxCell id="pgsql" value="PostgreSQL&#xa;(Neon, pooled endpoint)&#xa;Managed by Flyway" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#f8cecc;strokeColor=#b85450;fontFamily=Times New Roman;fontSize=12" vertex="1" parent="1">
+          <mxGeometry x="330" y="600" width="200" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="fs" value="Local File Storage&#xa;(uploads/ directory,&#xa;profile images)" style="shape=note;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontFamily=Times New Roman;fontSize=12" vertex="1" parent="1">
+          <mxGeometry x="620" y="610" width="200" height="90" as="geometry" />
+        </mxCell>
+        <!-- Hibernate note -->
+        <mxCell id="hibernate" value="Hibernate 6 / JPA&#xa;(ddl-auto=validate)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff;strokeColor=#000000;dashed=1;fontFamily=Times New Roman;fontSize=10;fontStyle=2" vertex="1" parent="1">
+          <mxGeometry x="900" y="490" width="140" height="40" as="geometry" />
+        </mxCell>
+        <!-- Arrows -->
+        <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;strokeColor=#000000" edge="1" parent="1" source="browser" target="ctrl-layer">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e1-lbl" value="HTTPS (Render TLS)" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontFamily=Times New Roman;fontSize=10" vertex="1" connectable="0" parent="e1">
+          <mxGeometry x="-0.1" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;strokeColor=#000000" edge="1" parent="1" source="ctrl-layer" target="svc-layer">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2-lbl" value="Constructor-injected,&#xa;primitive parameters" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontFamily=Times New Roman;fontSize=10" vertex="1" connectable="0" parent="e2">
+          <mxGeometry x="-0.2" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;strokeColor=#000000" edge="1" parent="1" source="svc-layer" target="repo-layer">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3-lbl" value="@Transactional,&#xa;@EntityGraph fetch plans" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontFamily=Times New Roman;fontSize=10" vertex="1" connectable="0" parent="e3">
+          <mxGeometry x="-0.2" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;strokeColor=#000000" edge="1" parent="1" source="repo-layer" target="pgsql">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4-lbl" value="JDBC&#xa;(HikariCP,&#xa;prepareThreshold=0)" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontFamily=Times New Roman;fontSize=10" vertex="1" connectable="0" parent="e4">
+          <mxGeometry x="-0.3" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;strokeColor=#000000;dashed=0" edge="1" parent="1" source="storageSvc" target="fs">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="795" y="580" />
+              <mxPoint x="720" y="580" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e6" style="edgeStyle=none;html=1;endArrow=classic;strokeColor=#9673a6;dashed=1" edge="1" parent="1" source="security" target="ctrl-layer">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6-lbl" value="intercepts every request" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontFamily=Times New Roman;fontSize=10;fontStyle=2" vertex="1" connectable="0" parent="e6">
+          <mxGeometry x="-0.1" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <!-- Legend -->
+        <mxCell id="legend" value="Legend:  Controllers (blue) handle HTTP • Services (green) hold business rules • Repositories (yellow) wrap JPA • Spring Security (purple) wraps the controller boundary" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=10;fontFamily=Times New Roman;fontStyle=2" vertex="1" parent="1">
+          <mxGeometry x="100" y="735" width="900" height="30" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="pY82KCrnhYgD0M6AI-4j" name="Page-2">
+    <mxGraphModel dx="984" dy="602" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
