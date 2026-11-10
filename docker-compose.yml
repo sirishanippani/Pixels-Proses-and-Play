@@ -1,0 +1,45 @@
+# Local Postgres smoke for Phase 7. NOT for production — the DB credentials
+# below are dev-only sentinels, and the compose file itself never deploys.
+# Prod (Neon + Render) gets its secrets from the host's env vars, which is
+# the whole point of Spring profile's ${DATABASE_URL:...} fallback pattern.
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: blogdb
+      POSTGRES_USER: blog
+      POSTGRES_PASSWORD: localdev
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      # Exposed so you can connect from psql / DataGrip on the host for
+      # poking around. Not required for app ↔ db communication (that
+      # happens over the compose network on the service name `db`).
+      - "5432:5432"
+    healthcheck:
+      # pg_isready is Postgres's own liveness probe. `app` waits on this
+      # (depends_on.condition=service_healthy) so the Spring Boot container
+      # doesn't start before migrations have a target to run against.
+      test: ["CMD-SHELL", "pg_isready -U blog -d blogdb"]
+      interval: 2s
+      timeout: 3s
+      retries: 20
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: postgres
+      DATABASE_URL: jdbc:postgresql://db:5432/blogdb
+      DATABASE_USERNAME: blog
+      DATABASE_PASSWORD: localdev
+    ports:
+      - "8080:8080"
+
+volumes:
+  pgdata:

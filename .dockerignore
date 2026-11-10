@@ -1,0 +1,43 @@
+# Keep the build context small: everything the Dockerfile doesn't COPY is noise
+# that still has to be sent to the Docker daemon on every build.
+
+# Build output
+target/
+build/
+
+# IDE / local tooling
+.idea/
+.vscode/
+*.iml
+*.iws
+.mvn/wrapper/maven-wrapper.jar
+
+# Git metadata (not needed to build a jar)
+.git/
+.gitignore
+.gitattributes
+
+# Docs & project memory — not part of the artifact
+docs/
+CLAUDE.md
+README.md
+HELP.md
+*.md
+
+# OS cruft
+.DS_Store
+Thumbs.db
+
+# Secrets & local-only config
+*.env
+.env*
+application-local-override.properties
+
+# Local uploads — runtime state, not build input
+uploads/
+uploads-local/
+
+# The Dockerfile itself and compose artifacts don't go inside the image
+Dockerfile
+.dockerignore
+docker-compose*.yml

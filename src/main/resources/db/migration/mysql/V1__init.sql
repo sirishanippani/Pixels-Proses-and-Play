@@ -37,7 +37,7 @@ CREATE TABLE post_tags (
 
 CREATE TABLE comments (
     id          BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    content     LONGTEXT,
+    content     TEXT,
     created_at  TIMESTAMP(6) NULL,
     post_id     BIGINT,
     user_id     BIGINT,

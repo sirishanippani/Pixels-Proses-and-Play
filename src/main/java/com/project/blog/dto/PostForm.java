@@ -15,7 +15,7 @@ public record PostForm(
         String title,
 
         @NotBlankHtml(message = "Content is required")
-        @Size(max = 50_000, message = "Content is too long")
+        @Size(max = 5_000_000, message = "Content is too long")
         String content,
 
         @Size(max = 500, message = "Tags input is too long")
