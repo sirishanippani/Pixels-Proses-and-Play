@@ -10,7 +10,7 @@
         </mxCell>
 
         <!-- User entity -->
-        <mxCell id="user" value="&lt;b&gt;«@Entity» User&lt;/b&gt;&lt;br/&gt;@Table(name=&quot;users&quot;)&lt;hr/&gt;- id: Long  {PK, @GeneratedValue}&lt;br/&gt;- username: String  {unique, not null}&lt;br/&gt;- email: String  {unique, not null}&lt;br/&gt;- password: String  {BCrypt, not null}&lt;br/&gt;- role: String  {ROLE_USER | ROLE_ADMIN}&lt;br/&gt;- bio: String  {nullable, ≤ 500}&lt;br/&gt;- profileImageUrl: String  {nullable}&lt;br/&gt;- createdAt: LocalDateTime&lt;hr/&gt;- posts: List⟨Post⟩&lt;br/&gt;- comments: List⟨Comment⟩" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;fillColor=#f5deb3;strokeColor=#8b7355;fontFamily=Times New Roman;fontSize=11;align=left;spacingLeft=6" vertex="1" parent="1">
+        <mxCell id="user" value="&lt;b&gt;«@Entity» User&lt;/b&gt;&lt;br/&gt;@Table(name=&quot;users&quot;)&lt;hr/&gt;- id: Long  {PK, @GeneratedValue}&lt;br/&gt;- username: String  {unique, not null}&lt;br/&gt;- email: String  {unique, not null}&lt;br/&gt;- password: String  {BCrypt, not null}&lt;br/&gt;- role: String  {ROLE_USER | ROLE_ADMIN}&lt;br/&gt;- bio: String  {nullable, ≤ 255 at schema, ≤ 500 at form}&lt;br/&gt;- profileImage: String  {nullable, URL to uploaded file}&lt;hr/&gt;- posts: List⟨Post⟩&lt;br/&gt;- comments: List⟨Comment⟩" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;fillColor=#f5deb3;strokeColor=#8b7355;fontFamily=Times New Roman;fontSize=11;align=left;spacingLeft=6" vertex="1" parent="1">
           <mxGeometry x="80" y="120" width="280" height="260" as="geometry" />
         </mxCell>
 
@@ -25,7 +25,7 @@
         </mxCell>
 
         <!-- Tag entity -->
-        <mxCell id="tag" value="&lt;b&gt;«@Entity» Tag&lt;/b&gt;&lt;br/&gt;@Table(name=&quot;tags&quot;)&lt;hr/&gt;- id: Long  {PK}&lt;br/&gt;- name: String  {unique, lower-cased}&lt;hr/&gt;- posts: Set⟨Post⟩  {@ManyToMany(mappedBy=&quot;tags&quot;)}" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;fillColor=#f5deb3;strokeColor=#8b7355;fontFamily=Times New Roman;fontSize=11;align=left;spacingLeft=6" vertex="1" parent="1">
+        <mxCell id="tag" value="&lt;b&gt;«@Entity» Tag&lt;/b&gt;&lt;br/&gt;@Table(name=&quot;tag&quot;)&lt;hr/&gt;- id: Long  {PK}&lt;br/&gt;- name: String  {unique, lower-cased}&lt;hr/&gt;- posts: Set⟨Post⟩  {@ManyToMany(mappedBy=&quot;tags&quot;)}" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;fillColor=#f5deb3;strokeColor=#8b7355;fontFamily=Times New Roman;fontSize=11;align=left;spacingLeft=6" vertex="1" parent="1">
           <mxGeometry x="880" y="120" width="260" height="160" as="geometry" />
         </mxCell>
 

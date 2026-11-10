@@ -1,0 +1,90 @@
+<mxfile host="app.diagrams.net" modified="2026-11-10T00:00:00.000Z" agent="report" version="24.0.0">
+  <diagram name="Entity-Relationship Diagram" id="fig-5-1">
+    <mxGraphModel dx="1422" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="title" value="Figure 5.1 — Entity-Relationship Diagram" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=16;fontStyle=1;fontFamily=Times New Roman" vertex="1" parent="1">
+          <mxGeometry x="400" y="20" width="500" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- users table -->
+        <mxCell id="t-users" value="&lt;b&gt;users&lt;/b&gt;&lt;hr/&gt;&lt;b&gt;PK&lt;/b&gt;  id  : BIGINT&lt;br/&gt;       username  : VARCHAR(255)&lt;br/&gt;       email  : VARCHAR(255)&lt;br/&gt;       password  : VARCHAR(255)&lt;br/&gt;       bio  : VARCHAR(255)&lt;br/&gt;       profile_image  : VARCHAR(255)&lt;br/&gt;       role  : VARCHAR(32)  NOT NULL" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;fillColor=#f5deb3;strokeColor=#8b7355;fontFamily=Times New Roman;fontSize=11;align=left;spacingLeft=6" vertex="1" parent="1">
+          <mxGeometry x="80" y="110" width="280" height="200" as="geometry" />
+        </mxCell>
+
+        <!-- posts table -->
+        <mxCell id="t-posts" value="&lt;b&gt;posts&lt;/b&gt;&lt;hr/&gt;&lt;b&gt;PK&lt;/b&gt;  id  : BIGINT&lt;br/&gt;       title  : VARCHAR(255)&lt;br/&gt;       content  : TEXT&lt;br/&gt;       created_at  : TIMESTAMP(6)&lt;br/&gt;&lt;b&gt;FK&lt;/b&gt;  user_id  : BIGINT  →  users.id" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;fillColor=#f5deb3;strokeColor=#8b7355;fontFamily=Times New Roman;fontSize=11;align=left;spacingLeft=6" vertex="1" parent="1">
+          <mxGeometry x="470" y="110" width="320" height="160" as="geometry" />
+        </mxCell>
+
+        <!-- comments table -->
+        <mxCell id="t-comments" value="&lt;b&gt;comments&lt;/b&gt;&lt;hr/&gt;&lt;b&gt;PK&lt;/b&gt;  id  : BIGINT&lt;br/&gt;       content  : TEXT&lt;br/&gt;       created_at  : TIMESTAMP(6)&lt;br/&gt;&lt;b&gt;FK&lt;/b&gt;  post_id  : BIGINT  →  posts.id&lt;br/&gt;&lt;b&gt;FK&lt;/b&gt;  user_id  : BIGINT  →  users.id" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;fillColor=#f5deb3;strokeColor=#8b7355;fontFamily=Times New Roman;fontSize=11;align=left;spacingLeft=6" vertex="1" parent="1">
+          <mxGeometry x="470" y="420" width="320" height="170" as="geometry" />
+        </mxCell>
+
+        <!-- tag table -->
+        <mxCell id="t-tag" value="&lt;b&gt;tag&lt;/b&gt;&lt;hr/&gt;&lt;b&gt;PK&lt;/b&gt;  id  : BIGINT&lt;br/&gt;       name  : VARCHAR(255)  UNIQUE  NOT NULL" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;fillColor=#f5deb3;strokeColor=#8b7355;fontFamily=Times New Roman;fontSize=11;align=left;spacingLeft=6" vertex="1" parent="1">
+          <mxGeometry x="880" y="110" width="280" height="110" as="geometry" />
+        </mxCell>
+
+        <!-- post_tags join table -->
+        <mxCell id="t-posttags" value="&lt;b&gt;post_tags&lt;/b&gt;  (join table)&lt;hr/&gt;&lt;b&gt;PK/FK&lt;/b&gt;  post_id  : BIGINT  →  posts.id&lt;br/&gt;&lt;b&gt;PK/FK&lt;/b&gt;  tag_id  : BIGINT  →  tag.id" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;fillColor=#fff2cc;strokeColor=#d6b656;fontFamily=Times New Roman;fontSize=11;align=left;spacingLeft=6" vertex="1" parent="1">
+          <mxGeometry x="880" y="300" width="280" height="110" as="geometry" />
+        </mxCell>
+
+        <!-- flyway_schema_history (metadata) -->
+        <mxCell id="t-flyway" value="&lt;b&gt;flyway_schema_history&lt;/b&gt;  (managed by Flyway)&lt;hr/&gt;installed_rank  : INTEGER&lt;br/&gt;version  : VARCHAR&lt;br/&gt;description  : VARCHAR&lt;br/&gt;type  : VARCHAR&lt;br/&gt;script  : VARCHAR&lt;br/&gt;checksum  : INTEGER&lt;br/&gt;installed_by  : VARCHAR&lt;br/&gt;installed_on  : TIMESTAMP&lt;br/&gt;execution_time  : INTEGER&lt;br/&gt;success  : BOOLEAN" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;fillColor=#ededed;strokeColor=#999999;fontFamily=Times New Roman;fontSize=10;align=left;spacingLeft=6;fontStyle=2" vertex="1" parent="1">
+          <mxGeometry x="80" y="420" width="300" height="220" as="geometry" />
+        </mxCell>
+
+        <!-- users → posts (1 : 0..N) -->
+        <mxCell id="r-users-posts" style="endArrow=ERmany;startArrow=ERone;html=1;strokeColor=#333333;exitX=1;exitY=0.3;entryX=0;entryY=0.5" edge="1" parent="1" source="t-users" target="t-posts">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="r-users-posts-lbl" value="authors&#10;(1 : 0..N)" style="edgeLabel;html=1;fontFamily=Times New Roman;fontSize=10;fontStyle=2" vertex="1" connectable="0" parent="r-users-posts">
+          <mxGeometry relative="1" as="geometry"><mxPoint as="offset" y="-14" /></mxGeometry>
+        </mxCell>
+
+        <!-- users → comments (1 : 0..N) -->
+        <mxCell id="r-users-comments" style="endArrow=ERmany;startArrow=ERone;html=1;strokeColor=#333333;exitX=1;exitY=0.8;entryX=0;entryY=0.5" edge="1" parent="1" source="t-users" target="t-comments">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="r-users-comments-lbl" value="writes&#10;(1 : 0..N)" style="edgeLabel;html=1;fontFamily=Times New Roman;fontSize=10;fontStyle=2" vertex="1" connectable="0" parent="r-users-comments">
+          <mxGeometry relative="1" as="geometry"><mxPoint as="offset" y="-14" /></mxGeometry>
+        </mxCell>
+
+        <!-- posts → comments (1 : 0..N) -->
+        <mxCell id="r-posts-comments" style="endArrow=ERmany;startArrow=ERone;html=1;strokeColor=#333333;exitX=0.5;exitY=1;entryX=0.5;entryY=0" edge="1" parent="1" source="t-posts" target="t-comments">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="r-posts-comments-lbl" value="holds&#10;(1 : 0..N)" style="edgeLabel;html=1;fontFamily=Times New Roman;fontSize=10;fontStyle=2" vertex="1" connectable="0" parent="r-posts-comments">
+          <mxGeometry relative="1" as="geometry"><mxPoint as="offset" x="10" /></mxGeometry>
+        </mxCell>
+
+        <!-- posts → post_tags (1 : 0..N) -->
+        <mxCell id="r-posts-posttags" style="endArrow=ERmany;startArrow=ERone;html=1;strokeColor=#333333;exitX=1;exitY=0.8;entryX=0;entryY=0.5" edge="1" parent="1" source="t-posts" target="t-posttags">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="r-posts-posttags-lbl" value="(1 : 0..N)" style="edgeLabel;html=1;fontFamily=Times New Roman;fontSize=10;fontStyle=2" vertex="1" connectable="0" parent="r-posts-posttags">
+          <mxGeometry relative="1" as="geometry"><mxPoint as="offset" y="-10" /></mxGeometry>
+        </mxCell>
+
+        <!-- tag → post_tags (1 : 0..N) -->
+        <mxCell id="r-tag-posttags" style="endArrow=ERmany;startArrow=ERone;html=1;strokeColor=#333333;exitX=0.5;exitY=1;entryX=0.8;entryY=0" edge="1" parent="1" source="t-tag" target="t-posttags">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="r-tag-posttags-lbl" value="(1 : 0..N)" style="edgeLabel;html=1;fontFamily=Times New Roman;fontSize=10;fontStyle=2" vertex="1" connectable="0" parent="r-tag-posttags">
+          <mxGeometry relative="1" as="geometry"><mxPoint as="offset" x="10" /></mxGeometry>
+        </mxCell>
+
+        <!-- Legend -->
+        <mxCell id="legend" value="Notation:  Crow's-foot cardinality marks at each relationship end.  ERone (single bar) — exactly one.  ERmany (crow's foot) — zero or more.&#10;Beige tables are domain entities.  Yellow table is an associative (join) table.  Grey table is the Flyway-managed migration-history metadata table (not part of the application schema)." style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=10;fontFamily=Times New Roman;fontStyle=2" vertex="1" parent="1">
+          <mxGeometry x="100" y="720" width="1000" height="50" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
