@@ -43,7 +43,7 @@ The functional requirements are grouped by capability area. Each requirement is 
 
 ### 3.2.3 Reading (READ)
 
-- **FR-READ-01.** The system shall present an Anonymous Reader with a home page listing the ten most recent posts in reverse chronological order, with an optional set of featured posts drawn at random from the full corpus. *Rationale:* The home page is the only route a reader lands on without context; both feeds are curated by the system rather than by the reader. *Owner:* `HomeController.home` calls `PostService.getLatestPosts` and `PostService.getFeaturedPosts`.
+- **FR-READ-01.** The system shall present an Anonymous Reader with a home page listing the ten most recent posts in reverse chronological order, with an optional set of featured posts drawn at random from the full corpus. *Rationale:* The home page is the only route a reader lands on without context; both feeds are curated by the system rather than by the reader. *Owner:* `HomeController.home` calls `PostService.getRecentPosts` and `PostService.getFeaturedPosts`.
 - **FR-READ-02.** The system shall render a single post at the URL `/post/{id}`, including its title, body, author byline, publication date, tag list, and comment thread. *Rationale:* The canonical permalink for a post is its database identifier; readable slugs are out of scope and reserved for a future slug-generation feature. *Owner:* `PostController.viewPost` calls `PostService.getPostForView`.
 - **FR-READ-03.** The system shall return an HTTP 404 response with the custom not-found template when the requested post identifier does not resolve to an existing post. *Rationale:* An HTTP 500 for a missing post is a bug that the project inherited and that Phase 3's domain exceptions corrected. *Owner:* `PostNotFoundException` annotated `@ResponseStatus(NOT_FOUND)`.
 - **FR-READ-04.** The system shall present a Registered Author with a dashboard listing the posts they have published, newest first. *Rationale:* The dashboard is the author's primary entry point and must not require a search; a simple list sorted by date is sufficient at the scale of a personal publication. *Owner:* `DashboardController.dashboard` calls `PostService.getPostsByUser`.
@@ -64,7 +64,7 @@ The functional requirements are grouped by capability area. Each requirement is 
 
 ### 3.2.6 Search (SRCH)
 
-- **FR-SRCH-01.** The system shall expose a JSON endpoint at `/search` that accepts a query string parameter `q` and returns a list of posts whose title or tag name contains the query substring, with the five most recent matches ranked newest first. *Rationale:* A typeahead search is a cheap discoverability feature; the implementation is a repository query, not a dedicated search index. *Owner:* `SearchController.searchPosts` delegates to `PostService.searchPosts`.
+- **FR-SRCH-01.** The system shall expose a JSON endpoint at `/search` that accepts a query string parameter `q` and returns the list of posts whose title contains the query substring, matched case-insensitively. *Rationale:* A typeahead search is a cheap discoverability feature; the implementation is a derived-query repository method, not a dedicated search index. *Owner:* `SearchController.searchPosts` delegates to `PostService.searchByTitle`.
 - **FR-SRCH-02.** The system shall render search results as a dropdown overlay on the home-page search box, each result linking to the matched post's permalink. *Rationale:* Rendering is client-side JavaScript consuming the JSON endpoint; the server contract is independent of the UI shell and can be reused if the UI is swapped. *Owner:* Client-side JavaScript on the home page.
 
 ### 3.2.7 Profile (PROF)
@@ -164,7 +164,7 @@ This section presents six use cases drawn from the functional requirements of Se
 - **Alternate flows:**
   1. **A1 Validation failure:** If step 4 fails, the system re-renders the authoring form with the actor's submitted values and error messages attached to the failing fields. The flow returns to step 3.
   2. **A2 Tag resolution race:** If a concurrent transaction has inserted a tag of the same name, the unique constraint on `tags.name` causes a rollback of step 6; the surrounding transaction retries the lookup on the retry and proceeds.
-- **Postconditions:** On the main flow, the `posts` table contains one new row; the `post_tags` join table contains one row per submitted tag; new tag names appear in the `tags` table.
+- **Postconditions:** On the main flow, the `posts` table contains one new row; the `post_tags` join table contains one row per submitted tag; new tag names appear in the `tag` table.
 - **Related FRs:** FR-POST-01, FR-POST-02, FR-POST-03, FR-POST-07.
 
 ### 3.4.3 UC-03: Comment on a Post
@@ -209,7 +209,7 @@ This section presents six use cases drawn from the functional requirements of Se
 - **Main flow:**
   1. The actor types in the search box on the home page.
   2. After each keystroke, the client-side JavaScript issues a GET to `/search?q={query}`.
-  3. The system queries the posts table for rows whose title contains the query substring or whose tag set contains a tag whose name contains the substring; the five most recent matches are returned as JSON.
+  3. The system queries the posts table for rows whose title contains the query substring, matched case-insensitively; the matches are returned as a JSON list of `PostSearchResultDto` records.
   4. The client renders the results as a dropdown below the search box; each result is a link to the matched post's permalink.
   5. The actor clicks a result; the browser navigates to the post's detail page.
 - **Alternate flows:**

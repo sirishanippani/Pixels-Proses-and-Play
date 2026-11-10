@@ -1,0 +1,105 @@
+<mxfile host="app.diagrams.net" modified="2026-11-10T00:00:00.000Z" agent="report" version="24.0.0">
+  <diagram name="Baseline vs New" id="fig-6-2">
+    <mxGraphModel dx="1422" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="title" value="Figure 6.2 — Baseline (OSIV on, no fetch plan)  vs  New design (OSIV off, @EntityGraph)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=15;fontStyle=1;fontFamily=Times New Roman" vertex="1" parent="1">
+          <mxGeometry x="200" y="15" width="1000" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Left panel: baseline -->
+        <mxCell id="lp-title" value="Baseline" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=13;fontStyle=1;fontFamily=Times New Roman" vertex="1" parent="1">
+          <mxGeometry x="60" y="60" width="620" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="lp-box" value="" style="rounded=0;html=1;fillColor=#fff5f5;strokeColor=#b85450;dashed=0" vertex="1" parent="1">
+          <mxGeometry x="60" y="90" width="620" height="760" as="geometry" />
+        </mxCell>
+
+        <mxCell id="lp-step1" value="1.  HomeController.home() calls postService.getRecentPosts()" style="text;html=1;align=left;whiteSpace=wrap;fontSize=11;fontFamily=Times New Roman" vertex="1" parent="1">
+          <mxGeometry x="80" y="110" width="580" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="lp-step2" value="2.  Service → postRepository.findTop10ByOrderByCreatedAtDesc() &lt;b&gt;(no @EntityGraph)&lt;/b&gt;" style="text;html=1;align=left;whiteSpace=wrap;fontSize=11;fontFamily=Times New Roman" vertex="1" parent="1">
+          <mxGeometry x="80" y="140" width="580" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="lp-sql1" value="SQL #1   SELECT p.* FROM posts ORDER BY created_at DESC LIMIT 10" style="rounded=0;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontFamily=Courier New;fontSize=10;align=left;spacingLeft=6" vertex="1" parent="1">
+          <mxGeometry x="90" y="170" width="560" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="lp-step3" value="3.  Service returns List⟨Post⟩ (entities with lazy proxies for user and tags)" style="text;html=1;align=left;whiteSpace=wrap;fontSize=11;fontFamily=Times New Roman" vertex="1" parent="1">
+          <mxGeometry x="80" y="210" width="580" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="lp-step4" value="4.  Thymeleaf renders template (OSIV still holds session open)" style="text;html=1;align=left;whiteSpace=wrap;fontSize=11;fontFamily=Times New Roman" vertex="1" parent="1">
+          <mxGeometry x="80" y="240" width="580" height="24" as="geometry" />
+        </mxCell>
+
+        <mxCell id="lp-cascade" value="For each of 10 posts:  post.getUser().getUsername()  +  for tag : post.getTags()" style="text;html=1;align=left;whiteSpace=wrap;fontSize=11;fontStyle=2;fontFamily=Times New Roman" vertex="1" parent="1">
+          <mxGeometry x="80" y="270" width="580" height="24" as="geometry" />
+        </mxCell>
+
+        <mxCell id="lp-sql2" value="SQL #2    SELECT u.* FROM users u WHERE u.id = ?            (post 1 author)" style="rounded=0;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontFamily=Courier New;fontSize=10;align=left;spacingLeft=6" vertex="1" parent="1">
+          <mxGeometry x="90" y="300" width="560" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="lp-sql3" value="SQL #3    SELECT t.* FROM tag t JOIN post_tags WHERE post_id = ?   (post 1 tags)" style="rounded=0;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontFamily=Courier New;fontSize=10;align=left;spacingLeft=6" vertex="1" parent="1">
+          <mxGeometry x="90" y="330" width="560" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="lp-sql4" value="SQL #4    SELECT u.* FROM users u WHERE u.id = ?            (post 2 author)" style="rounded=0;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontFamily=Courier New;fontSize=10;align=left;spacingLeft=6" vertex="1" parent="1">
+          <mxGeometry x="90" y="360" width="560" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="lp-sql5" value="SQL #5    SELECT t.* FROM tag …                              (post 2 tags)" style="rounded=0;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontFamily=Courier New;fontSize=10;align=left;spacingLeft=6" vertex="1" parent="1">
+          <mxGeometry x="90" y="390" width="560" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="lp-dots" value="…  (repeats for posts 3 through 10)  …" style="text;html=1;align=center;whiteSpace=wrap;fontSize=12;fontStyle=2;fontFamily=Times New Roman" vertex="1" parent="1">
+          <mxGeometry x="90" y="420" width="560" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="lp-sql20" value="SQL #20   SELECT u.* FROM users u WHERE u.id = ?            (post 10 author)" style="rounded=0;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontFamily=Courier New;fontSize=10;align=left;spacingLeft=6" vertex="1" parent="1">
+          <mxGeometry x="90" y="450" width="560" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="lp-sql21" value="SQL #21   SELECT t.* FROM tag …                             (post 10 tags)" style="rounded=0;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontFamily=Courier New;fontSize=10;align=left;spacingLeft=6" vertex="1" parent="1">
+          <mxGeometry x="90" y="480" width="560" height="26" as="geometry" />
+        </mxCell>
+
+        <mxCell id="lp-total" value="Total: 21 SQL round trips  (1  +  10 × 2)&#10;Pattern: N+1  (classic Hibernate anti-pattern)&#10;Open Session In View holds session through render; mutating a managed entity during render would persist on flush." style="rounded=0;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontFamily=Times New Roman;fontSize=11;align=left;spacingLeft=8;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="80" y="540" width="580" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- Right panel: new design -->
+        <mxCell id="rp-title" value="New design" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=13;fontStyle=1;fontFamily=Times New Roman" vertex="1" parent="1">
+          <mxGeometry x="720" y="60" width="620" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="rp-box" value="" style="rounded=0;html=1;fillColor=#f5fff5;strokeColor=#82b366" vertex="1" parent="1">
+          <mxGeometry x="720" y="90" width="620" height="760" as="geometry" />
+        </mxCell>
+
+        <mxCell id="rp-step1" value="1.  HomeController.home() calls postService.getRecentPosts()" style="text;html=1;align=left;whiteSpace=wrap;fontSize=11;fontFamily=Times New Roman" vertex="1" parent="1">
+          <mxGeometry x="740" y="110" width="580" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="rp-step2" value="2.  Service → postRepository.findTop10ByOrderByCreatedAtDesc()  &lt;b&gt;@EntityGraph(user, tags)&lt;/b&gt;" style="text;html=1;align=left;whiteSpace=wrap;fontSize=11;fontFamily=Times New Roman" vertex="1" parent="1">
+          <mxGeometry x="740" y="140" width="580" height="24" as="geometry" />
+        </mxCell>
+
+        <mxCell id="rp-sql1" value="SQL #1   SELECT p.*, u.*, t.*&#10;         FROM posts p&#10;         LEFT JOIN users u  ON u.id = p.user_id&#10;         LEFT JOIN post_tags pt ON pt.post_id = p.id&#10;         LEFT JOIN tag t    ON t.id = pt.tag_id&#10;         ORDER BY p.created_at DESC LIMIT 10" style="rounded=0;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontFamily=Courier New;fontSize=10;align=left;spacingLeft=6;verticalAlign=top" vertex="1" parent="1">
+          <mxGeometry x="740" y="180" width="580" height="110" as="geometry" />
+        </mxCell>
+
+        <mxCell id="rp-step3" value="3.  Service maps each Post to PostSummaryDto  (plain record, no proxies)" style="text;html=1;align=left;whiteSpace=wrap;fontSize=11;fontFamily=Times New Roman" vertex="1" parent="1">
+          <mxGeometry x="740" y="310" width="580" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="rp-step4" value="4.  Service closes @Transactional. Returns List⟨PostSummaryDto⟩" style="text;html=1;align=left;whiteSpace=wrap;fontSize=11;fontFamily=Times New Roman" vertex="1" parent="1">
+          <mxGeometry x="740" y="340" width="580" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="rp-step5" value="5.  Thymeleaf renders template.  (OSIV off: no session during render)" style="text;html=1;align=left;whiteSpace=wrap;fontSize=11;fontFamily=Times New Roman" vertex="1" parent="1">
+          <mxGeometry x="740" y="370" width="580" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="rp-step6" value="6.  Template iterates DTOs.  DTO has no associations to lazy-load." style="text;html=1;align=left;whiteSpace=wrap;fontSize=11;fontStyle=2;fontFamily=Times New Roman" vertex="1" parent="1">
+          <mxGeometry x="740" y="400" width="580" height="24" as="geometry" />
+        </mxCell>
+
+        <mxCell id="rp-total" value="Total: 1 SQL round trip&#10;Pattern: single join-fetch via @EntityGraph&#10;OSIV off: LazyInitializationException during render is now a loud failure and a signal for a missing fetch plan.&#10;DTO projection isolates the template from the entity's lifecycle." style="rounded=0;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontFamily=Times New Roman;fontSize=11;align=left;spacingLeft=8;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="740" y="540" width="580" height="120" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

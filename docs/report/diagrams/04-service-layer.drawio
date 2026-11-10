@@ -10,7 +10,7 @@
         </mxCell>
 
         <!-- Services (middle row) -->
-        <mxCell id="postSvc" value="&lt;b&gt;«@Service» PostService&lt;/b&gt;&lt;hr/&gt;+ createPost(user, title, content, tagCsv): Post&lt;br/&gt;+ updatePost(id, requester, title, content, tagCsv): Post&lt;br/&gt;+ deletePost(id, requester): void&lt;br/&gt;+ getPostForView(id): Post&lt;br/&gt;+ getLatestPosts(): List&amp;lt;PostSummaryDto&amp;gt;&lt;br/&gt;+ getPostsByUser(user): List&amp;lt;PostSummaryDto&amp;gt;&lt;br/&gt;+ getFeaturedPosts(): List&amp;lt;Post&amp;gt;&lt;br/&gt;+ searchPosts(q): List&amp;lt;PostSearchResult&amp;gt;" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;fillColor=#d5e8d4;strokeColor=#82b366;fontFamily=Times New Roman;fontSize=10;align=left;spacingLeft=6" vertex="1" parent="1">
+        <mxCell id="postSvc" value="&lt;b&gt;«@Service» PostService&lt;/b&gt;&lt;hr/&gt;+ createPost(user, title, content, tagCsv): Post&lt;br/&gt;+ updatePost(id, requester, title, content, tagCsv): Post&lt;br/&gt;+ deletePost(id, requester): void&lt;br/&gt;+ getPostForView(id): Post&lt;br/&gt;+ getRecentPosts(): List⟨PostSummaryDto⟩&lt;br/&gt;+ getPostsByUser(user): List⟨PostSummaryDto⟩&lt;br/&gt;+ getFeaturedPosts(): List⟨PostSummaryDto⟩&lt;br/&gt;+ searchByTitle(query): List⟨PostSearchResultDto⟩" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;fillColor=#d5e8d4;strokeColor=#82b366;fontFamily=Times New Roman;fontSize=10;align=left;spacingLeft=6" vertex="1" parent="1">
           <mxGeometry x="60" y="240" width="310" height="180" as="geometry" />
         </mxCell>
 

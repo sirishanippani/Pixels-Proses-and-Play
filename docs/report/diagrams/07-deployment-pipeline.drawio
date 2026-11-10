@@ -1,0 +1,71 @@
+<mxfile host="app.diagrams.net" modified="2026-11-11T00:00:00.000Z" agent="report" version="24.0.0">
+  <diagram name="Deployment Pipeline" id="fig-7-2">
+    <mxGraphModel dx="1422" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="700" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="title" value="Figure 7.2 — Deployment Pipeline: git push to live container" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=16;fontStyle=1;fontFamily=Times New Roman" vertex="1" parent="1">
+          <mxGeometry x="300" y="20" width="800" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Stage boxes -->
+        <mxCell id="s1" value="1.  Local commit&#10;&#10;git push origin main" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontFamily=Times New Roman;fontSize=11;verticalAlign=top;spacingTop=8" vertex="1" parent="1">
+          <mxGeometry x="40" y="110" width="180" height="120" as="geometry" />
+        </mxCell>
+
+        <mxCell id="s2" value="2.  GitHub&#10;&#10;receives push,&#10;fires webhook&#10;to Render" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontFamily=Times New Roman;fontSize=11;verticalAlign=top;spacingTop=8" vertex="1" parent="1">
+          <mxGeometry x="260" y="110" width="180" height="120" as="geometry" />
+        </mxCell>
+
+        <mxCell id="s3" value="3.  Render build&#10;&#10;clone at commit&#10;docker build .&#10;push image to registry" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Times New Roman;fontSize=11;verticalAlign=top;spacingTop=8" vertex="1" parent="1">
+          <mxGeometry x="480" y="110" width="200" height="120" as="geometry" />
+        </mxCell>
+
+        <mxCell id="s4" value="4.  Start new container&#10;&#10;pull image,&#10;inject env vars,&#10;exec ENTRYPOINT" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Times New Roman;fontSize=11;verticalAlign=top;spacingTop=8" vertex="1" parent="1">
+          <mxGeometry x="720" y="110" width="200" height="120" as="geometry" />
+        </mxCell>
+
+        <mxCell id="s5" value="5.  Boot sequence&#10;&#10;Spring Boot starts&#10;Flyway runs pending migrations&#10;HikariCP opens pool to Neon&#10;Tomcat binds to $PORT" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontFamily=Times New Roman;fontSize=11;verticalAlign=top;spacingTop=8" vertex="1" parent="1">
+          <mxGeometry x="960" y="110" width="220" height="140" as="geometry" />
+        </mxCell>
+
+        <mxCell id="s6" value="6.  Health check gate&#10;&#10;GET /actuator/health&#10;on new container until UP" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontFamily=Times New Roman;fontSize=11;verticalAlign=top;spacingTop=8" vertex="1" parent="1">
+          <mxGeometry x="960" y="320" width="220" height="100" as="geometry" />
+        </mxCell>
+
+        <mxCell id="s7" value="7.  Rolling swap&#10;&#10;SIGTERM to old container&#10;old drains ≤ 25 s&#10;old container terminates" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontFamily=Times New Roman;fontSize=11;verticalAlign=top;spacingTop=8" vertex="1" parent="1">
+          <mxGeometry x="720" y="320" width="200" height="120" as="geometry" />
+        </mxCell>
+
+        <mxCell id="s8" value="8.  Live&#10;&#10;New container&#10;receives traffic" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontFamily=Times New Roman;fontSize=12;fontStyle=1;verticalAlign=top;spacingTop=8" vertex="1" parent="1">
+          <mxGeometry x="480" y="320" width="200" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- Horizontal arrows top row -->
+        <mxCell id="a1" style="endArrow=classic;html=1;strokeColor=#000000" edge="1" parent="1" source="s1" target="s2"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="a2" style="endArrow=classic;html=1;strokeColor=#000000" edge="1" parent="1" source="s2" target="s3"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="a3" style="endArrow=classic;html=1;strokeColor=#000000" edge="1" parent="1" source="s3" target="s4"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="a4" style="endArrow=classic;html=1;strokeColor=#000000" edge="1" parent="1" source="s4" target="s5"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- Down -->
+        <mxCell id="a5" style="endArrow=classic;html=1;strokeColor=#000000" edge="1" parent="1" source="s5" target="s6"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- Bottom row right-to-left -->
+        <mxCell id="a6" style="endArrow=classic;html=1;strokeColor=#000000" edge="1" parent="1" source="s6" target="s7"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="a7" style="endArrow=classic;html=1;strokeColor=#000000" edge="1" parent="1" source="s7" target="s8"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- Rollback note -->
+        <mxCell id="rollback" value="If step 6 fails: Render abandons the new container and keeps the old one serving traffic.&#10;If step 5's Flyway step fails: Spring Boot exits non-zero, step 6 never turns green, the deploy is rejected and the old container stays live.&#10;Deployments are therefore atomic from the user's perspective." style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff5f5;strokeColor=#b85450;fontFamily=Times New Roman;fontSize=10;align=left;spacingLeft=10;verticalAlign=middle;fontStyle=2" vertex="1" parent="1">
+          <mxGeometry x="60" y="490" width="1120" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Legend -->
+        <mxCell id="legend" value="Grey — local / GitHub.  Blue — Render build and container lifecycle.  Green — application boot.  Yellow — live traffic.  Red — failure handling." style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=10;fontFamily=Times New Roman;fontStyle=2" vertex="1" parent="1">
+          <mxGeometry x="60" y="600" width="1120" height="30" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

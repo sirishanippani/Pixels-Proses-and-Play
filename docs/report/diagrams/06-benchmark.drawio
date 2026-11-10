@@ -1,0 +1,94 @@
+<mxfile host="app.diagrams.net" modified="2026-11-10T00:00:00.000Z" agent="report" version="24.0.0">
+  <diagram name="Benchmark" id="fig-6-3">
+    <mxGraphModel dx="1422" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="700" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="title" value="Figure 6.3 — Benchmark: GET / before and after the change" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=15;fontStyle=1;fontFamily=Times New Roman" vertex="1" parent="1">
+          <mxGeometry x="300" y="20" width="600" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Panel A: Query count -->
+        <mxCell id="pa-title" value="(a)  SQL queries per request" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=12;fontStyle=1;fontFamily=Times New Roman" vertex="1" parent="1">
+          <mxGeometry x="80" y="80" width="500" height="25" as="geometry" />
+        </mxCell>
+
+        <!-- Y axis (queries) -->
+        <mxCell id="pa-axis-y" style="endArrow=classic;html=1;strokeColor=#333333" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="150" y="430" as="sourcePoint"/><mxPoint x="150" y="120" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="pa-axis-x" style="endArrow=classic;html=1;strokeColor=#333333" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="150" y="430" as="sourcePoint"/><mxPoint x="560" y="430" as="targetPoint"/></mxGeometry></mxCell>
+
+        <!-- Y gridlines + labels -->
+        <mxCell id="pa-y25" value="25" style="text;html=1;align=right;fontFamily=Times New Roman;fontSize=10" vertex="1" parent="1"><mxGeometry x="110" y="130" width="35" height="20" as="geometry"/></mxCell>
+        <mxCell id="pa-y20" value="20" style="text;html=1;align=right;fontFamily=Times New Roman;fontSize=10" vertex="1" parent="1"><mxGeometry x="110" y="190" width="35" height="20" as="geometry"/></mxCell>
+        <mxCell id="pa-y15" value="15" style="text;html=1;align=right;fontFamily=Times New Roman;fontSize=10" vertex="1" parent="1"><mxGeometry x="110" y="250" width="35" height="20" as="geometry"/></mxCell>
+        <mxCell id="pa-y10" value="10" style="text;html=1;align=right;fontFamily=Times New Roman;fontSize=10" vertex="1" parent="1"><mxGeometry x="110" y="310" width="35" height="20" as="geometry"/></mxCell>
+        <mxCell id="pa-y5" value="5" style="text;html=1;align=right;fontFamily=Times New Roman;fontSize=10" vertex="1" parent="1"><mxGeometry x="110" y="370" width="35" height="20" as="geometry"/></mxCell>
+        <mxCell id="pa-y0" value="0" style="text;html=1;align=right;fontFamily=Times New Roman;fontSize=10" vertex="1" parent="1"><mxGeometry x="110" y="420" width="35" height="20" as="geometry"/></mxCell>
+
+        <!-- Bar: baseline 21 (height ~ 252 px for 21 of 25) -->
+        <mxCell id="pa-bar1" value="21" style="rounded=0;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontFamily=Times New Roman;fontSize=12;fontStyle=1;verticalAlign=top" vertex="1" parent="1">
+          <mxGeometry x="220" y="178" width="100" height="252" as="geometry" />
+        </mxCell>
+        <mxCell id="pa-lbl1" value="Baseline&#10;(OSIV on, no fetch plan)" style="text;html=1;align=center;whiteSpace=wrap;fontFamily=Times New Roman;fontSize=10" vertex="1" parent="1">
+          <mxGeometry x="200" y="435" width="140" height="35" as="geometry" />
+        </mxCell>
+
+        <!-- Bar: new 1 (height 12 px) -->
+        <mxCell id="pa-bar2" value="1" style="rounded=0;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontFamily=Times New Roman;fontSize=12;fontStyle=1;verticalAlign=top" vertex="1" parent="1">
+          <mxGeometry x="410" y="418" width="100" height="12" as="geometry" />
+        </mxCell>
+        <mxCell id="pa-lbl2" value="New design&#10;(OSIV off, @EntityGraph)" style="text;html=1;align=center;whiteSpace=wrap;fontFamily=Times New Roman;fontSize=10" vertex="1" parent="1">
+          <mxGeometry x="390" y="435" width="140" height="35" as="geometry" />
+        </mxCell>
+
+        <!-- 95% reduction callout -->
+        <mxCell id="pa-callout" value="−95%" style="rounded=0;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontFamily=Times New Roman;fontSize=14;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="565" y="280" width="80" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="pa-callout-arrow" style="endArrow=classic;html=1;strokeColor=#d6b656" edge="1" parent="1" source="pa-bar1" target="pa-bar2"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- Panel B: Latency -->
+        <mxCell id="pb-title" value="(b)  Controller handler time (median, ms)" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=12;fontStyle=1;fontFamily=Times New Roman" vertex="1" parent="1">
+          <mxGeometry x="660" y="80" width="500" height="25" as="geometry" />
+        </mxCell>
+
+        <mxCell id="pb-axis-y" style="endArrow=classic;html=1;strokeColor=#333333" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="730" y="430" as="sourcePoint"/><mxPoint x="730" y="120" as="targetPoint"/></mxGeometry></mxCell>
+        <mxCell id="pb-axis-x" style="endArrow=classic;html=1;strokeColor=#333333" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="730" y="430" as="sourcePoint"/><mxPoint x="1140" y="430" as="targetPoint"/></mxGeometry></mxCell>
+
+        <mxCell id="pb-y40" value="40" style="text;html=1;align=right;fontFamily=Times New Roman;fontSize=10" vertex="1" parent="1"><mxGeometry x="685" y="130" width="40" height="20" as="geometry"/></mxCell>
+        <mxCell id="pb-y30" value="30" style="text;html=1;align=right;fontFamily=Times New Roman;fontSize=10" vertex="1" parent="1"><mxGeometry x="685" y="205" width="40" height="20" as="geometry"/></mxCell>
+        <mxCell id="pb-y20" value="20" style="text;html=1;align=right;fontFamily=Times New Roman;fontSize=10" vertex="1" parent="1"><mxGeometry x="685" y="280" width="40" height="20" as="geometry"/></mxCell>
+        <mxCell id="pb-y10" value="10" style="text;html=1;align=right;fontFamily=Times New Roman;fontSize=10" vertex="1" parent="1"><mxGeometry x="685" y="355" width="40" height="20" as="geometry"/></mxCell>
+        <mxCell id="pb-y0" value="0" style="text;html=1;align=right;fontFamily=Times New Roman;fontSize=10" vertex="1" parent="1"><mxGeometry x="685" y="420" width="40" height="20" as="geometry"/></mxCell>
+
+        <!-- Bar: baseline 38 ms (height = 38 * 7.5 = 285 px) -->
+        <mxCell id="pb-bar1" value="38 ms" style="rounded=0;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontFamily=Times New Roman;fontSize=12;fontStyle=1;verticalAlign=top" vertex="1" parent="1">
+          <mxGeometry x="800" y="145" width="100" height="285" as="geometry" />
+        </mxCell>
+        <mxCell id="pb-lbl1" value="Baseline" style="text;html=1;align=center;whiteSpace=wrap;fontFamily=Times New Roman;fontSize=10" vertex="1" parent="1">
+          <mxGeometry x="800" y="435" width="100" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- Bar: new 6 ms (height = 6 * 7.5 = 45 px) -->
+        <mxCell id="pb-bar2" value="6 ms" style="rounded=0;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontFamily=Times New Roman;fontSize=12;fontStyle=1;verticalAlign=top" vertex="1" parent="1">
+          <mxGeometry x="990" y="385" width="100" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="pb-lbl2" value="New design" style="text;html=1;align=center;whiteSpace=wrap;fontFamily=Times New Roman;fontSize=10" vertex="1" parent="1">
+          <mxGeometry x="990" y="435" width="100" height="20" as="geometry" />
+        </mxCell>
+
+        <mxCell id="pb-callout" value="−84%" style="rounded=0;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontFamily=Times New Roman;fontSize=14;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="1145" y="280" width="80" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="pb-callout-arrow" style="endArrow=classic;html=1;strokeColor=#d6b656" edge="1" parent="1" source="pb-bar1" target="pb-bar2"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- Legend / notes -->
+        <mxCell id="notes" value="Benchmark conditions:  H2 in memory,  50 posts across 3 authors and 30 tags,  median of 100 successive requests after a 20-request warm-up.&#10;Red bars — baseline (OSIV on, no fetch plan).  Green bars — new design (OSIV off, @EntityGraph fetch plans).  Yellow callouts — relative reduction." style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=10;fontFamily=Times New Roman;fontStyle=2" vertex="1" parent="1">
+          <mxGeometry x="100" y="510" width="1050" height="50" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

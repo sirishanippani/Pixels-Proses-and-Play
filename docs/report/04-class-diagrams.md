@@ -54,7 +54,7 @@ The service layer holds the business rules of the platform. Each service is a Sp
 
 ### 4.3.1 PostService
 
-`PostService` is the largest service and owns every write path that touches a `Post`. Its `createPost(user, title, content, tagCsv)` method sanitizes the content through `HtmlSanitizer`, resolves the tag list through `TagService.resolveOrCreate`, and persists the post within a single Spring-managed transaction. Its `updatePost(postId, requester, title, content, tagCsv)` method loads the post, verifies that the requester's username matches the author's, throws `PostOwnershipException` if not, and otherwise overwrites the fields and tag set. `deletePost(postId, requester)` applies the same ownership check before deletion. The read paths `getPostForView(id)`, `getLatestPosts()`, `getPostsByUser(user)`, `getFeaturedPosts()`, and `searchPosts(query)` return either a single entity, a list of entities, or a list of DTOs depending on the view that will render them. `getFeaturedPosts()` implements its random selection in Java (`findAllIds` plus `Collections.shuffle` plus `findAllById`) rather than through a dialect-specific SQL expression.
+`PostService` is the largest service and owns every write path that touches a `Post`. Its `createPost(user, title, content, tagCsv)` method sanitizes the content through `HtmlSanitizer`, resolves the tag list through `TagService.resolveOrCreate`, and persists the post within a single Spring-managed transaction. Its `updatePost(postId, requester, title, content, tagCsv)` method loads the post, verifies that the requester's username matches the author's, throws `PostOwnershipException` if not, and otherwise overwrites the fields and tag set. `deletePost(postId, requester)` applies the same ownership check before deletion. The read paths `getPostForView(id)`, `getRecentPosts()`, `getPostsByUser(user)`, `getFeaturedPosts()`, and `searchByTitle(query)` return either a single entity, a list of entities, or a list of DTOs depending on the view that will render them. `getFeaturedPosts()` implements its random selection in Java (`findAllIds` plus `Collections.shuffle` plus `findAllById`) rather than through a dialect-specific SQL expression.
 
 ### 4.3.2 TagService
 
@@ -94,7 +94,7 @@ The controller layer handles HTTP binding, delegates business operations to serv
 
 ### 4.4.1 HomeController and DashboardController
 
-`HomeController.home(Model model)` renders the public home page by assembling a list of `PostSummaryDto` instances through `PostService.getLatestPosts` and `PostService.getFeaturedPosts`. `DashboardController.dashboard(AppUserDetails principal, Model model)` renders the authenticated author dashboard by projecting the author's posts through the same DTO. Both controllers are strict projections to a DTO on the way to the template, which is the pattern that closed the Phase 2 data-corruption bug.
+`HomeController.home(Model model)` renders the public home page by assembling a list of `PostSummaryDto` instances through `PostService.getRecentPosts` and `PostService.getFeaturedPosts`. `DashboardController.dashboard(AppUserDetails principal, Model model)` renders the authenticated author dashboard by projecting the author's posts through the same DTO. Both controllers are strict projections to a DTO on the way to the template, which is the pattern that closed the Phase 2 data-corruption bug.
 
 ### 4.4.2 PostController
 
@@ -118,7 +118,7 @@ The controller layer handles HTTP binding, delegates business operations to serv
 
 ### 4.4.7 SearchController
 
-`SearchController.searchPosts(@RequestParam String q)` is the only `@RestController` on the platform. It returns a JSON list of `PostSearchResult` DTOs for consumption by the client-side typeahead on the home page.
+`SearchController.searchPosts(@RequestParam("q") String query)` is the only `@RestController` on the platform. It delegates to `PostService.searchByTitle(query)` and returns a JSON list of `PostSearchResultDto` records for consumption by the client-side typeahead on the home page.
 
 ### 4.4.8 Form DTOs
 
