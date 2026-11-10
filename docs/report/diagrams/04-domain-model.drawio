@@ -1,0 +1,96 @@
+<mxfile host="app.diagrams.net" modified="2026-11-10T00:00:00.000Z" agent="report" version="24.0.0">
+  <diagram name="Domain Model" id="fig-4-1">
+    <mxGraphModel dx="1422" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="800" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="title" value="Figure 4.1 — Domain Model" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=16;fontStyle=1;fontFamily=Times New Roman" vertex="1" parent="1">
+          <mxGeometry x="400" y="20" width="400" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- User entity -->
+        <mxCell id="user" value="&lt;b&gt;«@Entity» User&lt;/b&gt;&lt;br/&gt;@Table(name=&quot;users&quot;)&lt;hr/&gt;- id: Long  {PK, @GeneratedValue}&lt;br/&gt;- username: String  {unique, not null}&lt;br/&gt;- email: String  {unique, not null}&lt;br/&gt;- password: String  {BCrypt, not null}&lt;br/&gt;- role: String  {ROLE_USER | ROLE_ADMIN}&lt;br/&gt;- bio: String  {nullable, ≤ 500}&lt;br/&gt;- profileImageUrl: String  {nullable}&lt;br/&gt;- createdAt: LocalDateTime&lt;hr/&gt;- posts: List⟨Post⟩&lt;br/&gt;- comments: List⟨Comment⟩" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;fillColor=#f5deb3;strokeColor=#8b7355;fontFamily=Times New Roman;fontSize=11;align=left;spacingLeft=6" vertex="1" parent="1">
+          <mxGeometry x="80" y="120" width="280" height="260" as="geometry" />
+        </mxCell>
+
+        <!-- Post entity -->
+        <mxCell id="post" value="&lt;b&gt;«@Entity» Post&lt;/b&gt;&lt;br/&gt;@Table(name=&quot;posts&quot;)&lt;hr/&gt;- id: Long  {PK, @GeneratedValue}&lt;br/&gt;- title: String  {not null, ≤ 200}&lt;br/&gt;- content: String  {TEXT, sanitized}&lt;br/&gt;- createdAt: LocalDateTime&lt;hr/&gt;- user: User  {@ManyToOne, FK, LAZY}&lt;br/&gt;- comments: List⟨Comment⟩  {@OneToMany, cascade=REMOVE}&lt;br/&gt;- tags: Set⟨Tag⟩  {@ManyToMany, join=post_tags, LAZY}" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;fillColor=#f5deb3;strokeColor=#8b7355;fontFamily=Times New Roman;fontSize=11;align=left;spacingLeft=6" vertex="1" parent="1">
+          <mxGeometry x="470" y="120" width="320" height="220" as="geometry" />
+        </mxCell>
+
+        <!-- Comment entity -->
+        <mxCell id="comment" value="&lt;b&gt;«@Entity» Comment&lt;/b&gt;&lt;br/&gt;@Table(name=&quot;comments&quot;)&lt;hr/&gt;- id: Long  {PK}&lt;br/&gt;- content: String  {TEXT, not null}&lt;br/&gt;- createdAt: LocalDateTime&lt;hr/&gt;- user: User  {@ManyToOne, FK, LAZY}&lt;br/&gt;- post: Post  {@ManyToOne, FK, LAZY}" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;fillColor=#f5deb3;strokeColor=#8b7355;fontFamily=Times New Roman;fontSize=11;align=left;spacingLeft=6" vertex="1" parent="1">
+          <mxGeometry x="470" y="450" width="320" height="180" as="geometry" />
+        </mxCell>
+
+        <!-- Tag entity -->
+        <mxCell id="tag" value="&lt;b&gt;«@Entity» Tag&lt;/b&gt;&lt;br/&gt;@Table(name=&quot;tags&quot;)&lt;hr/&gt;- id: Long  {PK}&lt;br/&gt;- name: String  {unique, lower-cased}&lt;hr/&gt;- posts: Set⟨Post⟩  {@ManyToMany(mappedBy=&quot;tags&quot;)}" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;fillColor=#f5deb3;strokeColor=#8b7355;fontFamily=Times New Roman;fontSize=11;align=left;spacingLeft=6" vertex="1" parent="1">
+          <mxGeometry x="880" y="120" width="260" height="160" as="geometry" />
+        </mxCell>
+
+        <!-- User to Post association -->
+        <mxCell id="r-user-post" style="endArrow=diamondThin;endFill=1;endSize=14;startArrow=none;html=1;exitX=1;exitY=0.2;entryX=0;entryY=0.2;strokeColor=#333333;fontFamily=Times New Roman;fontSize=10" edge="1" parent="1" source="user" target="post">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="r-user-post-lbl1" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;fontFamily=Times New Roman;fontSize=10" vertex="1" connectable="0" parent="r-user-post">
+          <mxGeometry x="-0.85" relative="1" as="geometry"><mxPoint as="offset" y="-10" /></mxGeometry>
+        </mxCell>
+        <mxCell id="r-user-post-lbl2" value="0..*" style="edgeLabel;html=1;align=center;verticalAlign=middle;fontFamily=Times New Roman;fontSize=10" vertex="1" connectable="0" parent="r-user-post">
+          <mxGeometry x="0.85" relative="1" as="geometry"><mxPoint as="offset" y="-10" /></mxGeometry>
+        </mxCell>
+        <mxCell id="r-user-post-lbl3" value="authors" style="edgeLabel;html=1;align=center;verticalAlign=middle;fontFamily=Times New Roman;fontSize=10;fontStyle=2" vertex="1" connectable="0" parent="r-user-post">
+          <mxGeometry relative="1" as="geometry"><mxPoint as="offset" y="-14" /></mxGeometry>
+        </mxCell>
+
+        <!-- User to Comment association -->
+        <mxCell id="r-user-comment" style="endArrow=diamondThin;endFill=1;endSize=14;startArrow=none;html=1;exitX=1;exitY=0.8;entryX=0;entryY=0.6;strokeColor=#333333" edge="1" parent="1" source="user" target="comment">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="r-user-comment-lbl1" value="1" style="edgeLabel;html=1;fontFamily=Times New Roman;fontSize=10" vertex="1" connectable="0" parent="r-user-comment">
+          <mxGeometry x="-0.85" relative="1" as="geometry"><mxPoint as="offset" y="-10" /></mxGeometry>
+        </mxCell>
+        <mxCell id="r-user-comment-lbl2" value="0..*" style="edgeLabel;html=1;fontFamily=Times New Roman;fontSize=10" vertex="1" connectable="0" parent="r-user-comment">
+          <mxGeometry x="0.85" relative="1" as="geometry"><mxPoint as="offset" y="-10" /></mxGeometry>
+        </mxCell>
+        <mxCell id="r-user-comment-lbl3" value="writes" style="edgeLabel;html=1;fontFamily=Times New Roman;fontSize=10;fontStyle=2" vertex="1" connectable="0" parent="r-user-comment">
+          <mxGeometry relative="1" as="geometry"><mxPoint as="offset" y="-14" /></mxGeometry>
+        </mxCell>
+
+        <!-- Post to Comment composition -->
+        <mxCell id="r-post-comment" style="endArrow=diamondThin;endFill=1;endSize=14;startArrow=none;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;strokeColor=#333333" edge="1" parent="1" source="post" target="comment">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="r-post-comment-lbl1" value="1" style="edgeLabel;html=1;fontFamily=Times New Roman;fontSize=10" vertex="1" connectable="0" parent="r-post-comment">
+          <mxGeometry x="-0.85" relative="1" as="geometry"><mxPoint as="offset" x="-14" /></mxGeometry>
+        </mxCell>
+        <mxCell id="r-post-comment-lbl2" value="0..*" style="edgeLabel;html=1;fontFamily=Times New Roman;fontSize=10" vertex="1" connectable="0" parent="r-post-comment">
+          <mxGeometry x="0.85" relative="1" as="geometry"><mxPoint as="offset" x="-14" /></mxGeometry>
+        </mxCell>
+        <mxCell id="r-post-comment-lbl3" value="holds (cascade REMOVE)" style="edgeLabel;html=1;fontFamily=Times New Roman;fontSize=10;fontStyle=2" vertex="1" connectable="0" parent="r-post-comment">
+          <mxGeometry relative="1" as="geometry"><mxPoint as="offset" x="12" /></mxGeometry>
+        </mxCell>
+
+        <!-- Post to Tag many-to-many -->
+        <mxCell id="r-post-tag" style="endArrow=none;startArrow=none;html=1;exitX=1;exitY=0.3;entryX=0;entryY=0.5;strokeColor=#333333" edge="1" parent="1" source="post" target="tag">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="r-post-tag-lbl1" value="0..*" style="edgeLabel;html=1;fontFamily=Times New Roman;fontSize=10" vertex="1" connectable="0" parent="r-post-tag">
+          <mxGeometry x="-0.85" relative="1" as="geometry"><mxPoint as="offset" y="-10" /></mxGeometry>
+        </mxCell>
+        <mxCell id="r-post-tag-lbl2" value="0..*" style="edgeLabel;html=1;fontFamily=Times New Roman;fontSize=10" vertex="1" connectable="0" parent="r-post-tag">
+          <mxGeometry x="0.85" relative="1" as="geometry"><mxPoint as="offset" y="-10" /></mxGeometry>
+        </mxCell>
+        <mxCell id="r-post-tag-lbl3" value="tagged with (join: post_tags)" style="edgeLabel;html=1;fontFamily=Times New Roman;fontSize=10;fontStyle=2" vertex="1" connectable="0" parent="r-post-tag">
+          <mxGeometry relative="1" as="geometry"><mxPoint as="offset" y="-14" /></mxGeometry>
+        </mxCell>
+
+        <!-- Legend -->
+        <mxCell id="legend" value="Notation:  Filled diamond — composition (lifecycle owned by source).  Plain line — association.  Multiplicities read source-end  .. target-end." style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=10;fontFamily=Times New Roman;fontStyle=2" vertex="1" parent="1">
+          <mxGeometry x="120" y="700" width="960" height="30" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

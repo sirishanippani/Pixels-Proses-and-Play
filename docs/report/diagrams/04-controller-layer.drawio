@@ -1,0 +1,130 @@
+<mxfile host="app.diagrams.net" modified="2026-11-10T00:00:00.000Z" agent="report" version="24.0.0">
+  <diagram name="Controller Layer" id="fig-4-3">
+    <mxGraphModel dx="1422" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="title" value="Figure 4.3 — Controller Layer and Form DTOs" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=16;fontStyle=1;fontFamily=Times New Roman" vertex="1" parent="1">
+          <mxGeometry x="450" y="20" width="500" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Controllers (top rows) -->
+        <mxCell id="home" value="&lt;b&gt;«@Controller» HomeController&lt;/b&gt;&lt;hr/&gt;+ home(model): String" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Times New Roman;fontSize=10;align=left;spacingLeft=6" vertex="1" parent="1">
+          <mxGeometry x="60" y="90" width="240" height="80" as="geometry" />
+        </mxCell>
+
+        <mxCell id="dash" value="&lt;b&gt;«@Controller» DashboardController&lt;/b&gt;&lt;hr/&gt;+ dashboard(principal, model): String" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Times New Roman;fontSize=10;align=left;spacingLeft=6" vertex="1" parent="1">
+          <mxGeometry x="330" y="90" width="260" height="80" as="geometry" />
+        </mxCell>
+
+        <mxCell id="post" value="&lt;b&gt;«@Controller» PostController&lt;/b&gt;&lt;hr/&gt;+ getCreateForm(model): String&lt;br/&gt;+ savePost(@Valid PostForm, result, principal, attrs): String&lt;br/&gt;+ getEditForm(id, principal, model): String&lt;br/&gt;+ updatePost(id, @Valid PostForm, result, principal, attrs): String&lt;br/&gt;+ deletePost(id, principal, attrs): String&lt;br/&gt;+ viewPost(id, model): String" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Times New Roman;fontSize=10;align=left;spacingLeft=6" vertex="1" parent="1">
+          <mxGeometry x="620" y="90" width="430" height="150" as="geometry" />
+        </mxCell>
+
+        <mxCell id="comment" value="&lt;b&gt;«@Controller» CommentController&lt;/b&gt;&lt;hr/&gt;+ createComment(postId, @Valid CommentForm, result, principal, attrs): String&lt;br/&gt;+ deleteComment(id, principal, attrs): String" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Times New Roman;fontSize=10;align=left;spacingLeft=6" vertex="1" parent="1">
+          <mxGeometry x="1080" y="90" width="310" height="110" as="geometry" />
+        </mxCell>
+
+        <mxCell id="auth" value="&lt;b&gt;«@Controller» AuthController&lt;/b&gt;&lt;hr/&gt;+ getRegisterForm(model): String&lt;br/&gt;+ register(@Valid RegisterRequest, result, attrs): String" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Times New Roman;fontSize=10;align=left;spacingLeft=6" vertex="1" parent="1">
+          <mxGeometry x="60" y="280" width="320" height="110" as="geometry" />
+        </mxCell>
+
+        <mxCell id="profile" value="&lt;b&gt;«@Controller» ProfileController&lt;/b&gt;&lt;hr/&gt;+ profile(username, model): String&lt;br/&gt;+ editProfileForm(principal, model): String&lt;br/&gt;+ saveProfile(@Valid ProfileForm, result, image, principal, attrs): String" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Times New Roman;fontSize=10;align=left;spacingLeft=6" vertex="1" parent="1">
+          <mxGeometry x="410" y="280" width="420" height="120" as="geometry" />
+        </mxCell>
+
+        <mxCell id="admin" value="&lt;b&gt;«@Controller» AdminController&lt;/b&gt;&lt;hr/&gt;+ adminDashboard(model): String&lt;br/&gt;+ deleteUser(id, attrs): String&lt;br/&gt;+ toggleUserRole(id, attrs): String" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Times New Roman;fontSize=10;align=left;spacingLeft=6" vertex="1" parent="1">
+          <mxGeometry x="860" y="280" width="290" height="120" as="geometry" />
+        </mxCell>
+
+        <mxCell id="search" value="&lt;b&gt;«@RestController» SearchController&lt;/b&gt;&lt;hr/&gt;+ searchPosts(q): List&amp;lt;PostSearchResult&amp;gt;" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Times New Roman;fontSize=10;align=left;spacingLeft=6" vertex="1" parent="1">
+          <mxGeometry x="1180" y="280" width="270" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- Form DTOs (middle row) -->
+        <mxCell id="regForm" value="&lt;b&gt;«record» RegisterRequest&lt;/b&gt;&lt;hr/&gt;- username: String  @NotBlank @Size(3-32)&lt;br/&gt;- email: String  @NotBlank @Email&lt;br/&gt;- password: String  @NotBlank @Size(min=8)" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;fillColor=#cfe2f3;strokeColor=#3d85c6;fontFamily=Times New Roman;fontSize=10;align=left;spacingLeft=6" vertex="1" parent="1">
+          <mxGeometry x="60" y="450" width="310" height="110" as="geometry" />
+        </mxCell>
+
+        <mxCell id="postForm" value="&lt;b&gt;«record» PostForm&lt;/b&gt;&lt;hr/&gt;- title: String  @NotBlank @Size(≤200)&lt;br/&gt;- content: String  @NotBlankHtml @Size(≤5_000_000)&lt;br/&gt;- tags: String  // comma-separated" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;fillColor=#cfe2f3;strokeColor=#3d85c6;fontFamily=Times New Roman;fontSize=10;align=left;spacingLeft=6" vertex="1" parent="1">
+          <mxGeometry x="410" y="450" width="330" height="110" as="geometry" />
+        </mxCell>
+
+        <mxCell id="profileForm" value="&lt;b&gt;«record» ProfileForm&lt;/b&gt;&lt;hr/&gt;- displayName: String  @NotBlank&lt;br/&gt;- bio: String  @Size(≤500)" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;fillColor=#cfe2f3;strokeColor=#3d85c6;fontFamily=Times New Roman;fontSize=10;align=left;spacingLeft=6" vertex="1" parent="1">
+          <mxGeometry x="780" y="450" width="280" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="commentForm" value="&lt;b&gt;«record» CommentForm&lt;/b&gt;&lt;hr/&gt;- content: String  @NotBlank @Size(≤2000)" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;fillColor=#cfe2f3;strokeColor=#3d85c6;fontFamily=Times New Roman;fontSize=10;align=left;spacingLeft=6" vertex="1" parent="1">
+          <mxGeometry x="1100" y="450" width="310" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Service tier reference box -->
+        <mxCell id="svcBox" value="Service Tier&#10;(see Figure 4.2)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontFamily=Times New Roman;fontSize=12;fontStyle=1;dashed=1" vertex="1" parent="1">
+          <mxGeometry x="500" y="640" width="400" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Controller → Form bindings -->
+        <mxCell id="b1" style="endArrow=open;html=1;strokeColor=#3d85c6;fontFamily=Times New Roman;fontSize=9" edge="1" parent="1" source="auth" target="regForm">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="b1-lbl" value="@Valid" style="edgeLabel;html=1;fontFamily=Times New Roman;fontSize=9;fontStyle=2;fontColor=#3d85c6" vertex="1" connectable="0" parent="b1">
+          <mxGeometry relative="1" as="geometry"><mxPoint as="offset" x="-10" /></mxGeometry>
+        </mxCell>
+
+        <mxCell id="b2" style="endArrow=open;html=1;strokeColor=#3d85c6" edge="1" parent="1" source="post" target="postForm">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="b2-lbl" value="@Valid" style="edgeLabel;html=1;fontFamily=Times New Roman;fontSize=9;fontStyle=2;fontColor=#3d85c6" vertex="1" connectable="0" parent="b2">
+          <mxGeometry relative="1" as="geometry"><mxPoint as="offset" x="-10" /></mxGeometry>
+        </mxCell>
+
+        <mxCell id="b3" style="endArrow=open;html=1;strokeColor=#3d85c6" edge="1" parent="1" source="profile" target="profileForm">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="b3-lbl" value="@Valid" style="edgeLabel;html=1;fontFamily=Times New Roman;fontSize=9;fontStyle=2;fontColor=#3d85c6" vertex="1" connectable="0" parent="b3">
+          <mxGeometry relative="1" as="geometry"><mxPoint as="offset" x="-10" /></mxGeometry>
+        </mxCell>
+
+        <mxCell id="b4" style="endArrow=open;html=1;strokeColor=#3d85c6" edge="1" parent="1" source="comment" target="commentForm">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="b4-lbl" value="@Valid" style="edgeLabel;html=1;fontFamily=Times New Roman;fontSize=9;fontStyle=2;fontColor=#3d85c6" vertex="1" connectable="0" parent="b4">
+          <mxGeometry relative="1" as="geometry"><mxPoint as="offset" x="-10" /></mxGeometry>
+        </mxCell>
+
+        <!-- Controller → Services -->
+        <mxCell id="s1" style="endArrow=open;html=1;dashed=1;strokeColor=#82b366" edge="1" parent="1" source="home" target="svcBox">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s2" style="endArrow=open;html=1;dashed=1;strokeColor=#82b366" edge="1" parent="1" source="dash" target="svcBox">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s3" style="endArrow=open;html=1;dashed=1;strokeColor=#82b366" edge="1" parent="1" source="post" target="svcBox">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s4" style="endArrow=open;html=1;dashed=1;strokeColor=#82b366" edge="1" parent="1" source="comment" target="svcBox">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s5" style="endArrow=open;html=1;dashed=1;strokeColor=#82b366" edge="1" parent="1" source="auth" target="svcBox">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s6" style="endArrow=open;html=1;dashed=1;strokeColor=#82b366" edge="1" parent="1" source="profile" target="svcBox">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s7" style="endArrow=open;html=1;dashed=1;strokeColor=#82b366" edge="1" parent="1" source="admin" target="svcBox">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s8" style="endArrow=open;html=1;dashed=1;strokeColor=#82b366" edge="1" parent="1" source="search" target="svcBox">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Legend -->
+        <mxCell id="legend" value="Notation:  Blue (dark) — controller classes.  Blue (light) — form DTOs that controllers bind through @Valid @ModelAttribute.  Solid blue arrows — @Valid binding.  Dashed green arrows — delegation to the service tier (all controllers depend on one or more services from Figure 4.2)." style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=10;fontFamily=Times New Roman;fontStyle=2" vertex="1" parent="1">
+          <mxGeometry x="100" y="770" width="1200" height="50" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

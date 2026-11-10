@@ -1,0 +1,102 @@
+<mxfile host="app.diagrams.net" modified="2026-11-10T00:00:00.000Z" agent="report" version="24.0.0">
+  <diagram name="Service Layer" id="fig-4-2">
+    <mxGraphModel dx="1422" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="title" value="Figure 4.2 — Service Layer" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=16;fontStyle=1;fontFamily=Times New Roman" vertex="1" parent="1">
+          <mxGeometry x="500" y="20" width="400" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Services (middle row) -->
+        <mxCell id="postSvc" value="&lt;b&gt;«@Service» PostService&lt;/b&gt;&lt;hr/&gt;+ createPost(user, title, content, tagCsv): Post&lt;br/&gt;+ updatePost(id, requester, title, content, tagCsv): Post&lt;br/&gt;+ deletePost(id, requester): void&lt;br/&gt;+ getPostForView(id): Post&lt;br/&gt;+ getLatestPosts(): List&amp;lt;PostSummaryDto&amp;gt;&lt;br/&gt;+ getPostsByUser(user): List&amp;lt;PostSummaryDto&amp;gt;&lt;br/&gt;+ getFeaturedPosts(): List&amp;lt;Post&amp;gt;&lt;br/&gt;+ searchPosts(q): List&amp;lt;PostSearchResult&amp;gt;" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;fillColor=#d5e8d4;strokeColor=#82b366;fontFamily=Times New Roman;fontSize=10;align=left;spacingLeft=6" vertex="1" parent="1">
+          <mxGeometry x="60" y="240" width="310" height="180" as="geometry" />
+        </mxCell>
+
+        <mxCell id="userSvc" value="&lt;b&gt;«@Service» UserService&lt;/b&gt;&lt;hr/&gt;+ register(username, email, rawPassword): User&lt;br/&gt;+ updateProfile(current, display, bio, imageUrl): User&lt;br/&gt;+ findByUsername(username): Optional&amp;lt;User&amp;gt;" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;fillColor=#d5e8d4;strokeColor=#82b366;fontFamily=Times New Roman;fontSize=10;align=left;spacingLeft=6" vertex="1" parent="1">
+          <mxGeometry x="420" y="240" width="300" height="110" as="geometry" />
+        </mxCell>
+
+        <mxCell id="tagSvc" value="&lt;b&gt;«@Service» TagService&lt;/b&gt;&lt;hr/&gt;+ resolveOrCreate(csv): Set&amp;lt;Tag&amp;gt;" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;fillColor=#d5e8d4;strokeColor=#82b366;fontFamily=Times New Roman;fontSize=10;align=left;spacingLeft=6" vertex="1" parent="1">
+          <mxGeometry x="420" y="400" width="300" height="80" as="geometry" />
+        </mxCell>
+
+        <mxCell id="commentSvc" value="&lt;b&gt;«@Service» CommentService&lt;/b&gt;&lt;hr/&gt;+ createComment(postId, author, content): Comment&lt;br/&gt;+ deleteComment(commentId, requester): void" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;fillColor=#d5e8d4;strokeColor=#82b366;fontFamily=Times New Roman;fontSize=10;align=left;spacingLeft=6" vertex="1" parent="1">
+          <mxGeometry x="770" y="240" width="310" height="100" as="geometry" />
+        </mxCell>
+
+        <mxCell id="adminSvc" value="&lt;b&gt;«@Service» AdminService&lt;/b&gt;&lt;hr/&gt;+ getAllUsers(): List&amp;lt;User&amp;gt;&lt;br/&gt;+ getAllPosts(): List&amp;lt;Post&amp;gt;&lt;br/&gt;+ deleteUser(id): void&lt;br/&gt;+ toggleUserRole(id): User" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;fillColor=#d5e8d4;strokeColor=#82b366;fontFamily=Times New Roman;fontSize=10;align=left;spacingLeft=6" vertex="1" parent="1">
+          <mxGeometry x="770" y="380" width="310" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- Boundary adapters (right side) -->
+        <mxCell id="storage" value="&lt;b&gt;«@Service» StorageService&lt;/b&gt;&lt;hr/&gt;+ store(file: MultipartFile): String" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;fillColor=#e1d5e7;strokeColor=#9673a6;fontFamily=Times New Roman;fontSize=10;align=left;spacingLeft=6" vertex="1" parent="1">
+          <mxGeometry x="1140" y="240" width="220" height="80" as="geometry" />
+        </mxCell>
+
+        <mxCell id="sanitizer" value="&lt;b&gt;«@Component» HtmlSanitizer&lt;/b&gt;&lt;hr/&gt;+ sanitize(html: String): String" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;fillColor=#e1d5e7;strokeColor=#9673a6;fontFamily=Times New Roman;fontSize=10;align=left;spacingLeft=6" vertex="1" parent="1">
+          <mxGeometry x="1140" y="340" width="220" height="80" as="geometry" />
+        </mxCell>
+
+        <mxCell id="flash" value="&lt;b&gt;«@Service» FlashService&lt;/b&gt;&lt;hr/&gt;+ success(attrs, code, args): void&lt;br/&gt;+ error(attrs, code, args): void&lt;br/&gt;+ warning(attrs, code, args): void&lt;br/&gt;+ info(attrs, code, args): void" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;fillColor=#e1d5e7;strokeColor=#9673a6;fontFamily=Times New Roman;fontSize=10;align=left;spacingLeft=6" vertex="1" parent="1">
+          <mxGeometry x="1140" y="440" width="220" height="110" as="geometry" />
+        </mxCell>
+
+        <!-- Repositories (bottom row) -->
+        <mxCell id="postRepo" value="&lt;b&gt;«@Repository» PostRepository&lt;/b&gt;&lt;br/&gt;extends JpaRepository&amp;lt;Post, Long&amp;gt;&lt;hr/&gt;+ findByUser(user): List&amp;lt;Post&amp;gt;  {@EntityGraph}&lt;br/&gt;+ findTop10ByOrderByCreatedAtDesc(): List&amp;lt;Post&amp;gt;  {@EntityGraph}&lt;br/&gt;+ findAllById(ids): List&amp;lt;Post&amp;gt;  {@EntityGraph}&lt;br/&gt;+ findAllIds(): List&amp;lt;Long&amp;gt;" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;fillColor=#fff2cc;strokeColor=#d6b656;fontFamily=Times New Roman;fontSize=10;align=left;spacingLeft=6" vertex="1" parent="1">
+          <mxGeometry x="60" y="620" width="340" height="140" as="geometry" />
+        </mxCell>
+
+        <mxCell id="userRepo" value="&lt;b&gt;«@Repository» UserRepository&lt;/b&gt;&lt;br/&gt;extends JpaRepository&amp;lt;User, Long&amp;gt;&lt;hr/&gt;+ findByUsername(u): Optional&amp;lt;User&amp;gt;&lt;br/&gt;+ findByEmail(e): Optional&amp;lt;User&amp;gt;&lt;br/&gt;+ existsByRole(role): boolean" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;fillColor=#fff2cc;strokeColor=#d6b656;fontFamily=Times New Roman;fontSize=10;align=left;spacingLeft=6" vertex="1" parent="1">
+          <mxGeometry x="440" y="620" width="300" height="140" as="geometry" />
+        </mxCell>
+
+        <mxCell id="tagRepo" value="&lt;b&gt;«@Repository» TagRepository&lt;/b&gt;&lt;br/&gt;extends JpaRepository&amp;lt;Tag, Long&amp;gt;&lt;hr/&gt;+ findByName(name): Optional&amp;lt;Tag&amp;gt;" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;fillColor=#fff2cc;strokeColor=#d6b656;fontFamily=Times New Roman;fontSize=10;align=left;spacingLeft=6" vertex="1" parent="1">
+          <mxGeometry x="780" y="620" width="280" height="100" as="geometry" />
+        </mxCell>
+
+        <mxCell id="commentRepo" value="&lt;b&gt;«@Repository» CommentRepository&lt;/b&gt;&lt;br/&gt;extends JpaRepository&amp;lt;Comment, Long&amp;gt;&lt;hr/&gt;+ findByPost(post): List&amp;lt;Comment&amp;gt;  {@EntityGraph}" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;fillColor=#fff2cc;strokeColor=#d6b656;fontFamily=Times New Roman;fontSize=10;align=left;spacingLeft=6" vertex="1" parent="1">
+          <mxGeometry x="1100" y="620" width="300" height="100" as="geometry" />
+        </mxCell>
+
+        <!-- Service → Repository dependencies -->
+        <mxCell id="d1" style="endArrow=open;html=1;dashed=1;strokeColor=#82b366" edge="1" parent="1" source="postSvc" target="postRepo"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="d2" style="endArrow=open;html=1;dashed=1;strokeColor=#82b366" edge="1" parent="1" source="userSvc" target="userRepo"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="d3" style="endArrow=open;html=1;dashed=1;strokeColor=#82b366" edge="1" parent="1" source="tagSvc" target="tagRepo"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="d4" style="endArrow=open;html=1;dashed=1;strokeColor=#82b366" edge="1" parent="1" source="commentSvc" target="commentRepo"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="d5" style="endArrow=open;html=1;dashed=1;strokeColor=#82b366" edge="1" parent="1" source="adminSvc" target="userRepo"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="d6" style="endArrow=open;html=1;dashed=1;strokeColor=#82b366" edge="1" parent="1" source="adminSvc" target="postRepo"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <!-- Service → Service dependencies -->
+        <mxCell id="d7" style="endArrow=open;html=1;dashed=1;strokeColor=#333333" edge="1" parent="1" source="postSvc" target="tagSvc">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="d7-lbl" value="«uses» resolveOrCreate" style="edgeLabel;html=1;fontFamily=Times New Roman;fontSize=9;fontStyle=2" vertex="1" connectable="0" parent="d7">
+          <mxGeometry relative="1" as="geometry"><mxPoint as="offset" y="-10" /></mxGeometry>
+        </mxCell>
+
+        <mxCell id="d8" style="endArrow=open;html=1;dashed=1;strokeColor=#333333" edge="1" parent="1" source="commentSvc" target="postSvc">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="d8-lbl" value="«uses» getPostForView" style="edgeLabel;html=1;fontFamily=Times New Roman;fontSize=9;fontStyle=2" vertex="1" connectable="0" parent="d8">
+          <mxGeometry relative="1" as="geometry"><mxPoint as="offset" y="-10" /></mxGeometry>
+        </mxCell>
+
+        <!-- Service → Boundary adapters -->
+        <mxCell id="d9" style="endArrow=open;html=1;dashed=1;strokeColor=#9673a6" edge="1" parent="1" source="postSvc" target="sanitizer">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="d9-lbl" value="«uses»" style="edgeLabel;html=1;fontFamily=Times New Roman;fontSize=9;fontStyle=2;fontColor=#9673a6" vertex="1" connectable="0" parent="d9">
+          <mxGeometry relative="1" as="geometry"><mxPoint as="offset" y="-10" /></mxGeometry>
+        </mxCell>
+
+        <!-- Legend -->
+        <mxCell id="legend" value="Notation:  Dashed arrow — «uses» dependency (source depends on target).  Green arrows — service to repository.  Grey arrows — service to service.  Purple arrows — service to boundary adapter (Storage, Sanitizer, Flash)." style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=10;fontFamily=Times New Roman;fontStyle=2" vertex="1" parent="1">
+          <mxGeometry x="100" y="810" width="1200" height="40" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
