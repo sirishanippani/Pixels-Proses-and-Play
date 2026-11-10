@@ -50,9 +50,9 @@
         const editor = new toastui.Editor({
             el: document.querySelector('#toast-editor'),
             height: '420px',
-            initialEditType: 'wysiwyg',
+            initialEditType: 'markdown',
             previewStyle: 'vertical',
-            hideModeSwitch: true,
+            hideModeSwitch: false,
             initialValue: document.querySelector('#content')?.value || ''
         });
         document.querySelector('#postForm').addEventListener('submit', () => {
